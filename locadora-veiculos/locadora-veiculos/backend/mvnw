@@ -1,0 +1,26 @@
+#!/bin/sh
+# Maven Wrapper simplificado — baixa o Apache Maven dentro da pasta do projeto
+# (em backend/.mvn) na primeira execução, sem precisar instalar nada nem ter
+# permissão de administrador. Nas próximas vezes, reaproveita o que já baixou.
+#
+# Uso: ./mvnw spring-boot:run   (em vez de "mvn spring-boot:run")
+
+MAVEN_VERSION=3.9.6
+DIR="$(cd "$(dirname "$0")" && pwd)"
+MAVEN_HOME="$DIR/.mvn/maven-$MAVEN_VERSION"
+
+if [ ! -x "$MAVEN_HOME/bin/mvn" ]; then
+  echo "Primeira execução: baixando o Apache Maven $MAVEN_VERSION (só acontece uma vez)..."
+  mkdir -p "$DIR/.mvn"
+  curl -fsSL "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip" -o "$DIR/.mvn/maven.zip"
+  if [ $? -ne 0 ]; then
+    echo "Erro ao baixar o Maven. Verifique sua conexão com a internet."
+    exit 1
+  fi
+  unzip -q "$DIR/.mvn/maven.zip" -d "$DIR/.mvn"
+  mv "$DIR/.mvn/apache-maven-$MAVEN_VERSION" "$MAVEN_HOME"
+  rm "$DIR/.mvn/maven.zip"
+  echo "Maven pronto."
+fi
+
+exec "$MAVEN_HOME/bin/mvn" "$@"
