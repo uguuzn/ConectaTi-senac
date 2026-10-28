@@ -1,6 +1,19 @@
 import { getAuthHeader } from "./session";
 
-const baseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8080").replace(/\/$/, "");
+// A URL da API deve vir EXCLUSIVAMENTE de VITE_API_URL (nunca hardcoded).
+const rawApiUrl = import.meta.env.VITE_API_URL as string | undefined;
+
+if (!rawApiUrl) {
+  if (import.meta.env.DEV) {
+    console.warn("[api] VITE_API_URL não definida — usando http://localhost:8080 (apenas desenvolvimento).");
+  } else {
+    // Falha explícita no build de produção: sem isso o app tentaria
+    // http://localhost:8080 silenciosamente e todas as requisições falhariam.
+    throw new Error("[api] VITE_API_URL não configurada no build de produção.");
+  }
+}
+
+const baseUrl = (rawApiUrl || "http://localhost:8080").replace(/\/$/, "");
 
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number) { super(message); }
