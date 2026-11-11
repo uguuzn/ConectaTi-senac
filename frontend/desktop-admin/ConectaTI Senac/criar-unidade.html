@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Nova unidade</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Nova unidade</h1><p class="muted">Cadastre uma unidade Senac (dados locais).</p></div>
+                    <div class="actions-row"><a href="unidades.html" class="btn btn-outline">Voltar</a></div>
+                </header>
+                <section class="card" style="max-width:640px">
+                    <form class="form" onsubmit="return criarUnidade(event)">
+                        <label>Nome <input type="text" id="nomeUnidade" placeholder="Ex.: Senac Taguatinga Sul" required></label>
+                        <label>Cidade / DF <input type="text" id="cidadeUnidade" placeholder="Ex.: Taguatinga/DF" required></label>
+                        <label>Salas cadastradas <input type="number" id="salasUnidade" min="0" value="0"></label>
+                        <div class="actions-row"><button type="submit" class="btn btn-primary btn-block">Salvar unidade</button></div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        function criarUnidade(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nomeUnidade').value.trim();
+            const cidade = document.getElementById('cidadeUnidade').value.trim();
+            const salas = parseInt(document.getElementById('salasUnidade').value, 10) || 0;
+
+            if (!nome || !cidade) { toast('Informe nome e cidade da unidade.'); return false; }
+
+            const lista = getUnidadesLocal();
+            lista.push({ id: uid('un'), nome, cidade, salas });
+            setUnidadesLocal(lista);
+            toast('Unidade criada.');
+            setTimeout(() => { window.location.href = 'unidades.html'; }, 500);
+            return false;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Acompanhar chamados</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Acompanhar chamados</h1><p class="muted">Acompanhe o andamento das suas solicitações.</p></div>
+                    <div class="actions-row"><a href="chat.html" class="btn btn-primary">Falar com o suporte</a></div>
+                </header>
+                <section class="filters card">
+                    <input type="text" id="buscaAcompanhar" placeholder="Buscar chamado por ID ou titulo..." aria-label="Buscar chamado" oninput="filtrarAcompanhar()">
+                    <select id="filtroStatusAcompanhar" aria-label="Filtrar por status" onchange="filtrarAcompanhar()">
+                        <option value="todos">Todos status</option>
+                        <option value="Aberto">Aberto</option>
+                        <option value="Em atendimento">Em atendimento</option>
+                        <option value="Resolvido">Resolvido</option>
+                    </select>
+                </section>
+                <p class="alerta erro" id="acompanharErro" style="display:none"></p>
+                <section id="listaAcompanhar"></section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        let chamadosAcompanhar = [];
+
+        function badgeStatus(status) {
+            return '<span class="status ' + slug(status) + '">' + escaparHTML(status) + '</span>';
+        }
+
+        function getStatusTimeline(status) {
+            const steps = ['Aberto', 'Em atendimento', 'Resolvido'];
+            const currentIndex = steps.indexOf(status);
+            return steps.map((step, index) => {
+                let classe = '';
+                if (index < currentIndex) classe = 'done';
+                else if (index === currentIndex) classe = 'active';
+                return `<div class="status-step ${classe}"><div class="circle">${index + 1}</div><span class="label">${step}</span></div>`;
+            }).join('');
+        }
+
+        async function exibirAcompanhar() {
+            const container = document.getElementById('listaAcompanhar');
+            const busca = document.getElementById('buscaAcompanhar')?.value.toLowerCase() || '';
+            const status = document.getElementById('filtroStatusAcompanhar')?.value || 'todos';
+
+            const filtrados = chamadosAcompanhar.filter(c => {
+                const matchBusca = String(c.id).includes(busca) || (c.titulo || '').toLowerCase().includes(busca);
+                const matchStatus = status === 'todos' || c.status === status;
+                return matchBusca && matchStatus;
+            });
+
+            if (!container) return;
+            container.innerHTML = filtrados.map(c => `
+                <div class="chamado-detalhe">
+                    <div class="cabecalho">
+                        <b>#${escaparHTML(c.id)} · ${escaparHTML(c.titulo)}</b>
+                        ${badgeStatus(c.status)}
+                    </div>
+                    <p class="descricao">${escaparHTML(c.descricao || '')}</p>
+                    <div class="timeline">${getStatusTimeline(c.status)}</div>
+                    <ul class="historico">
+                        ${(c.historico || []).map(h => `<li><b>${escaparHTML(h.data)}</b> — ${escaparHTML(h.acao)}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            if (!filtrados.length) {
+                container.innerHTML = '<p class="muted center">Nenhum chamado encontrado.</p>';
+            }
+        }
+
+        function filtrarAcompanhar() { exibirAcompanhar(); }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const usuario = getSessaoSegura()?.usuario;
+                const lista = (await ConectaTIAPI.listarChamados()) || [];
+                chamadosAcompanhar = lista.map(c => ({
+                    id: c.id,
+                    titulo: c.titulo,
+                    descricao: c.descricao,
+                    status: c.status === 'EM_ATENDIMENTO' || c.status === 'EM_ANDAMENTO' ? 'Em atendimento'
+                          : c.status === 'CONCLUIDO' ? 'Resolvido'
+                          : c.status === 'ABERTO' ? 'Aberto'
+                          : c.status,
+                    historico: [
+                        { data: c.dataCriacao ? new Date(c.dataCriacao).toLocaleString('pt-BR') : '', acao: 'Chamado aberto' },
+                        ...(c.tecnicoResponsavelNome ? [{ data: '', acao: 'Em atendimento — ' + c.tecnicoResponsavelNome }] : []),
+                        ...(c.solucao ? [{ data: c.dataFechamento ? new Date(c.dataFechamento).toLocaleString('pt-BR') : '', acao: 'Resolvido — ' + c.solucao }] : [])
+                    ]
+                }));
+            } catch (e) {
+                chamadosAcompanhar = [];
+                const erroEl = document.getElementById('acompanharErro');
+                if (erroEl) { erroEl.textContent = e.message; erroEl.style.display = 'block'; }
+            }
+            exibirAcompanhar();
+        });
+    </script>
+</body>
+</html>

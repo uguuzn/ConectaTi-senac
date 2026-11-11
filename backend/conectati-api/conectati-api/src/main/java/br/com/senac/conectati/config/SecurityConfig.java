@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/", "/index.html", "/assets/**", "/js/**", "/css/**").permitAll()
                         .requestMatchers("/usuarios/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/chamados/*/status", "/chamados/*/assumir", "/chamados/*/relatorio-tecnico").hasRole("TECNICO")

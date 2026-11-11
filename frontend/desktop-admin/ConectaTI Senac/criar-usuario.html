@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Novo usuario</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Novo usuario</h1><p class="muted">Cadastro local do navegador (modulo da API ainda nao existe).</p></div>
+                    <div class="actions-row"><a href="usuarios.html" class="btn btn-outline">Voltar</a></div>
+                </header>
+                <section class="card" style="max-width:640px">
+                    <form class="form" onsubmit="return criarUsuario(event)">
+                        <label>Nome<input type="text" id="nomeUsuario" placeholder="Ex.: João Silva" required></label>
+                        <label>E-mail<input type="email" id="emailUsuario" placeholder="Ex.: joao@senacdf.com.br" required></label>
+                        <label>Cargo
+                            <select id="perfilUsuario" required>
+                                <option value="">Selecione</option>
+                                <option value="ADMINISTRADOR">Administrador</option>
+                                <option value="TECNICO">Tecnico</option>
+                                <option value="INSTRUTOR">Instrutor</option>
+                                <option value="COORDENADOR">Coordenador</option>
+                            </select>
+                        </label>
+                        <label>Unidade<select id="unidadeUsuario"></select></label>
+                        <label>Senha<input type="password" id="senhaUsuario" placeholder="Mínimo de 6 caracteres" required minlength="6"></label>
+                        <label>Confirmar senha<input type="password" id="confirmarSenha" placeholder="Repita a senha" required></label>
+                        <label>Ativo
+                            <select id="statusUsuario">
+                                <option value="true" selected>Sim</option>
+                                <option value="false">Nao</option>
+                            </select>
+                        </label>
+                        <div class="actions-row"><button type="submit" class="btn btn-primary btn-block">Criar usuário</button></div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        const UNIDADES_SELECT = [
+            'Senac Taguatinga Sul - Taguatinga/DF', 'Senac Taguatinga Norte - Taguatinga/DF',
+            'Senac Plano Piloto - Brasília/DF', 'Senac Ceilândia - Ceilândia/DF',
+            'Senac Gama - Gama/DF', 'Senac Sobradinho - Sobradinho/DF',
+            'Senac Planaltina - Planaltina/DF', 'Senac Guará - Guará/DF',
+            'Senac Samambaia - Samambaia/DF', 'Senac São Sebastião - São Sebastião/DF',
+            'Senac Recanto das Emas - Recanto das Emas/DF', 'Senac 903 Sul - Brasília/DF'
+        ];
+
+        async function criarUsuario(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nomeUsuario').value.trim();
+            const email = document.getElementById('emailUsuario').value.trim();
+            const perfil = document.getElementById('perfilUsuario').value;
+            const unidade = document.getElementById('unidadeUsuario').value;
+            const senha = document.getElementById('senhaUsuario').value;
+            const confirmar = document.getElementById('confirmarSenha').value;
+            const ativo = document.getElementById('statusUsuario').value === 'true';
+
+            if (!nome || !email || !perfil || !senha || !confirmar) { toast('Preencha todos os campos obrigatórios!'); return false; }
+            if (senha !== confirmar) { toast('As senhas não coincidem!'); return false; }
+            if (senha.length < 6) { toast('A senha deve ter pelo menos 6 caracteres!'); return false; }
+
+            const lista = getUsuariosLocal();
+            if (lista.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+                toast('Já existe um usuário local com este e-mail.');
+                return false;
+            }
+
+            lista.push({ id: uid('u'), nome, email, perfil: getRotuloPerfil(perfil) !== 'Visitante' ? getRotuloPerfil(perfil) : perfil, unidade, ativo });
+            setUsuariosLocal(lista);
+            toast('Usuário ' + nome + ' criado com sucesso!');
+            setTimeout(() => { window.location.href = 'usuarios.html'; }, 600);
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('unidadeUsuario');
+            if (select) select.innerHTML = ['<option value="">Selecione a unidade</option>']
+                .concat(UNIDADES_SELECT.map(u => '<option value="' + u + '">' + u + '</option>')).join('');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Gerenciar chamados</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Gerenciar chamados</h1><p class="muted">Ações do Suporte TI (assumir, concluir, cancelar e conversar).</p></div>
+                </header>
+                <section class="filters card">
+                    <input type="text" id="buscaGerenciar" placeholder="Buscar chamados..." aria-label="Buscar chamados">
+                    <select id="filtroStatusGerenciar" aria-label="Filtrar por status">
+                        <option value="todos">Todos status</option>
+                        <option value="ABERTO">Aberto</option>
+                        <option value="EM_ANALISE">Em análise</option>
+                        <option value="EM_ANDAMENTO">Em andamento</option>
+                        <option value="CONCLUIDO">Concluído</option>
+                        <option value="CANCELADO">Cancelado</option>
+                    </select>
+                    <select id="filtroPrioridadeGerenciar" aria-label="Filtrar por prioridade">
+                        <option value="todos">Todas prioridades</option>
+                        <option value="BAIXA">Baixa</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="URGENTE">Urgente</option>
+                    </select>
+                </section>
+                <p class="alerta erro" id="gerenciarErro" style="display:none"></p>
+                <section class="card">
+                    <div class="table-wrap">
+                        <table class="tabela">
+                            <thead><tr><th>#</th><th>Titulo</th><th>Categoria</th><th>Prioridade</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+                            <tbody id="listaGerenciar"></tbody>
+                        </table>
+                    </div>
+                    <p class="muted center" id="gerenciarVazio" style="display:none">Nenhum chamado encontrado.</p>
+                </section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

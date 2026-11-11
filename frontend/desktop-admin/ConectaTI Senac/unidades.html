@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Unidades</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Gestão de unidades</h1><p class="muted">Cadastre e gerencie as unidades Senac.</p></div>
+                    <button class="btn btn-primary" id="btnNovaUnidade">+ Nova unidade</button>
+                </header>
+                <section class="card">
+                    <div class="table-wrap">
+                        <table class="tabela">
+                            <thead><tr><th>Nome</th><th>Cidade / DF</th><th>Salas cadastradas</th><th>Ações</th></tr></thead>
+                            <tbody id="listaUnidades"></tbody>
+                        </table>
+                    </div>
+                </section>
+                <div class="modal hidden" id="modalUnidade">
+                    <div class="modal-card">
+                        <h3>Editar unidade</h3>
+                        <form class="form" id="formEditarUnidade">
+                            <label>Nome <input type="text" id="unidadeNome" placeholder="Ex.: Senac Taguatinga Sul" required></label>
+                            <label>Cidade / DF <input type="text" id="unidadeCidade" placeholder="Ex.: Taguatinga/DF" required></label>
+                            <label>Salas cadastradas <input type="number" id="unidadeSalas" min="0" value="0"></label>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-ghost" id="btnCancelarUnidade">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
