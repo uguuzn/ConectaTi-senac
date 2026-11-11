@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#004587" />
+  <title>ConectaTI Senac DF</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/vendor/react.production.min.js"></script>
+  <script defer src="/vendor/react-dom.production.min.js"></script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .fade-in { animation: fade .28s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-200">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useMemo, useRef, useEffect } = React;
+
+    async function requestApi(path, { method = "GET", body, headers = {}, csrf = "", raw = false } = {}) {
+      const requestHeaders = { ...headers };
+      if (body !== undefined && !raw) requestHeaders["Content-Type"] = "application/json";
+      if (csrf && method !== "GET") requestHeaders["X-CSRF-Token"] = csrf;
+      let response;
+      try {
+        response = await fetch(path, {
+          method,
+          credentials: "same-origin",
+          headers: requestHeaders,
+          body: body === undefined ? undefined : raw ? body : JSON.stringify(body),
+        });
+      } catch {
+        throw new Error("Não foi possível conectar ao servidor ConectaTI. Confirme que ele está em execução e tente novamente.");
+      }
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("O servidor retornou uma resposta inválida.");
+      }
+      if (!response.ok) throw new Error(data.error || "Não foi possível concluir a operação.");
+      return data;
+    }
+
+    const UNITS = [
+      "Senac 903 Sul (Faculdade Senac DF)",
+      "Senac Jessé Freire (SCS)",
+      "Senac Taguatinga",
+      "Senac Ceilândia",
+      "Senac Gama",
+      "Senac Sobradinho",
+      "Senac Santa Maria",
+      "Senac Guará",
+    ];
+    const STATUSES = ["Online", "Em Atendimento", "Ausente"];
+    const MACROS = [
+      "Estou a caminho do local...",
+      "Favor verificar cabos de rede/energia",
+      "Reiniciando ponto de acesso remotamente",
+      "Equipamento em diagnóstico. Retorno em instantes.",
+      "Chamado assumido. Iniciando atendimento.",
+    ];
+    const CATS = ["Hardware", "Rede", "Multimídia", "Software"];
+
+    const Icon = ({ d, size = 20, stroke = 2, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+        {d}
+      </svg>
+    );
+    const I = {
+      building: <><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></>,
+      mail: <><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>,
+      lock: <><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
+      login: <><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></>,
+      user: <><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+      plus: <><path d="M5 12h14"/><path d="M12 5v14"/></>,
+      clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+      wrench: <><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></>,
+      alert: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></>,
+      check: <><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>,
+      zap: <><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></>,
+      cpu: <><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></>,
+      home: <><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
+      inbox: <><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></>,
+      msg: <><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></>,
+      map: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
+      send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
+      paper: <><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></>,
+      x: <><path d="M18 6 6 18"/><path d="m6 6 12 12"/></>,
+      log: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></>,
+      chev: <><path d="m6 9 6 6 6-6"/></>,
+    };
+
+    const Logo = () => (
+      <div className="flex items-center gap-2">
+        <img src="./senac-logo.png" alt="Senac" className="h-9 w-[52px] rounded bg-white object-contain" />
+        <div className="leading-tight">
+          <div className="text-sm font-bold text-white">ConectaTI</div>
+        </div>
+      </div>
+    );
+
+    function initials(name) {
+      const p = (name || "").trim().split(/\s+/).filter(Boolean);
+      if (!p.length) return "TI";
+      return ((p[0][0] || "") + (p.length > 1 ? p[p.length - 1][0] : "")).toUpperCase();
+    }
+    function validEmail(v) {
+      return /^[^\s@]+@(df\.senac\.br|senac\.br)$/i.test((v || "").trim());
+    }
+    function urgencyMeta(u) {
+      if (u === "critica") return { label: "Crítica", cls: "bg-red-100 text-red-700 border-red-200" };
+      if (u === "alta") return { label: "Alta", cls: "bg-orange-100 text-orange-700 border-orange-200" };
+      if (u === "media") return { label: "Média", cls: "bg-amber-100 text-amber-800 border-amber-200" };
+      return { label: "Baixa", cls: "bg-slate-100 text-slate-600 border-slate-200" };
+    }
+    function UrgencyBadge({ u }) {
+      const m = urgencyMeta(u);
+      return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${m.cls}`}>{m.label}</span>;
+    }
+    function SlaBadge({ min, closed }) {
+      if (closed) return <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700"><Icon d={I.check} size={12} /> Encerrado</span>;
+      if (min <= 0) return <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700"><Icon d={I.alert} size={12} /> SLA vencido</span>;
+      const hot = min <= 30;
+      return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${hot ? "bg-[#F68B1F] text-white" : "bg-slate-100 text-slate-700"}`}><Icon d={I.clock} size={12} /> SLA {min} min</span>;
+    }
+    function DemoBadge() {
+      return <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">Demonstração</span>;
+    }
+    function pcStatusMeta(s) {
+      if (s === "ok") return { label: "Operacional", cls: "bg-emerald-500", soft: "bg-emerald-50 text-emerald-800 border-emerald-200" };
+      if (s === "atendimento") return { label: "Em atendimento", cls: "bg-amber-400", soft: "bg-amber-50 text-amber-800 border-amber-200" };
+      return { label: "Inoperante", cls: "bg-red-500", soft: "bg-red-50 text-red-700 border-red-200" };
+    }
+
+    function App() {
+      const [session, setSession] = useState(null);
+      const [csrf, setCsrf] = useState("");
+      const [booting, setBooting] = useState(true);
+      const [serviceError, setServiceError] = useState("");
+      const [tab, setTab] = useState("inicio");
+      const [tickets, setTickets] = useState([]);
+      const [rooms, setRooms] = useState([]);
+      const [users, setUsers] = useState([]);
+      const [selectedId, setSelectedId] = useState(null);
+      const [statusFilter, setStatusFilter] = useState("Todos");
+      const [urgFilter, setUrgFilter] = useState("Todas");
+      const [ticketSearch, setTicketSearch] = useState("");
+      const [presence, setPresence] = useState("Online");
+      const [showPresence, setShowPresence] = useState(false);
+      const [newOpen, setNewOpen] = useState(false);
+      const [savingTicket, setSavingTicket] = useState(false);
+      const [savingUser, setSavingUser] = useState(false);
+      const [resolveOpen, setResolveOpen] = useState(false);
+      const [note, setNote] = useState("");
+      const [draft, setDraft] = useState("");
+      const [pcModal, setPcModal] = useState(null);
+      const [editProfile, setEditProfile] = useState(false);
+      const [newUserOpen, setNewUserOpen] = useState(false);
+      const [toast, setToast] = useState("");
+      const [passwordChange, setPasswordChange] = useState({ atual: "", nova: "", confirmar: "" });
+      const chatRef = useRef(null);
+      const fileInputRef = useRef(null);
+      const toastTimerRef = useRef(null);
+
+      const [form, setForm] = useState({ email: "", senha: "", erro: "" });
+      const [novo, setNovo] = useState({ title: "", category: "Hardware", room: "Lab de Informática 01", requester: "", role: "Docente", urgency: "media" });
+      const [edit, setEdit] = useState({ nome: "", email: "", cargo: "", unidade: "" });
+      const [newUser, setNewUser] = useState({ nome: "", email: "", cargo: "Técnico de Suporte de TI", unidade: UNITS[0], senha: "" });
+
+      const me = session?.nome || "";
+      const selected = tickets.find((t) => t.id === selectedId) || null;
+
+      async function loadTickets(token = csrf) {
+        const data = await requestApi("/api/tickets", { csrf: token });
+        setTickets(data.tickets);
+      }
+
+      async function loadRooms(token = csrf) {
+        const data = await requestApi("/api/rooms", { csrf: token });
+        setRooms(data.rooms);
+      }
+
+      async function loadUsers(token = csrf) {
+        const data = await requestApi("/api/users", { csrf: token });
+        setUsers(data.users);
+      }
+
+      useEffect(() => {
+        let cancelled = false;
+        (async () => {
+          try {
+            const data = await requestApi("/api/session");
+            if (cancelled) return;
+            setCsrf(data.csrf || "");
+            if (data.user) {
+              setSession(data.user);
+              setPresence(data.user.presence || "Online");
+              const results = await Promise.all([
+                requestApi("/api/tickets", { csrf: data.csrf }),
+                requestApi("/api/rooms", { csrf: data.csrf }),
+                data.user.role === "admin" ? requestApi("/api/users", { csrf: data.csrf }) : Promise.resolve({ users: [] }),
+              ]);
+              if (!cancelled) {
+                setTickets(results[0].tickets);
+                setRooms(results[1].rooms);
+                setUsers(results[2].users);
+              }
+            }
+          } catch (error) {
+            if (!cancelled) setServiceError(error.message);
+          } finally {
+            if (!cancelled) setBooting(false);
+          }
+        })();
+        return () => { cancelled = true; };
+      }, []);
+
+      useEffect(() => {
+        if (!session) return undefined;
+        const refresh = async () => {
+          try {
+            await Promise.all([loadTickets(), loadRooms()]);
+            setServiceError("");
+          } catch (error) {
+            setServiceError(error.message);
+          }
+        };
+        const timer = setInterval(refresh, 30000);
+        return () => clearInterval(timer);
+      }, [session?.id, csrf]);
+
+      useEffect(() => {
+        if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }, [selectedId, selected?.messages?.length, tab]);
+
+      function ping(msg) {
+        setToast(msg);
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = setTimeout(() => setToast(""), 2600);
+      }
+
+      async function login(e) {
+        e.preventDefault();
+        if (!validEmail(form.email) || !form.senha) {
+          setForm((value) => ({ ...value, erro: "Informe seu e-mail institucional e sua senha." }));
+          return;
+        }
+        try {
+          const data = await requestApi("/api/login", { method: "POST", body: { email: form.email, password: form.senha } });
+          setCsrf(data.csrf);
+          setSession(data.user);
+          setPresence(data.user.presence || "Online");
+          setForm({ email: "", senha: "", erro: "" });
+          setServiceError("");
+          setTab("inicio");
+          const results = await Promise.all([
+            requestApi("/api/tickets", { csrf: data.csrf }),
+            requestApi("/api/rooms", { csrf: data.csrf }),
+            data.user.role === "admin" ? requestApi("/api/users", { csrf: data.csrf }) : Promise.resolve({ users: [] }),
+          ]);
+          setTickets(results[0].tickets);
+          setRooms(results[1].rooms);
+          setUsers(results[2].users);
+        } catch (error) {
+          setForm((value) => ({ ...value, erro: error.message }));
+        }
+      }
+
+      async function logout() {
+        try {
+          await requestApi("/api/logout", { method: "POST", csrf });
+          setSession(null);
+          setCsrf("");
+          setTickets([]);
+          setRooms([]);
+          setUsers([]);
+          setSelectedId(null);
+          setEditProfile(false);
+          setTab("inicio");
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      const kpis = useMemo(() => {
+        const abertos = tickets.filter((t) => t.status === "aberto" && !t.assignee).length;
+        const meus = tickets.filter((t) => t.status === "em_atendimento" && t.assignee === me).length;
+        const crit = tickets.filter((t) => t.status !== "fechado" && (t.urgency === "critica" || t.slaMin <= 30)).length;
+        const dia = tickets.filter((t) => t.status === "fechado" && t.resolvedToday).length;
+        return { abertos, meus, crit, dia };
+      }, [tickets, me]);
+
+      const urgentes = useMemo(() => {
+        const rank = { critica: 0, alta: 1, media: 2, baixa: 3 };
+        return tickets.filter((t) => t.status !== "fechado").slice().sort((a, b) => rank[a.urgency] - rank[b.urgency] || a.slaMin - b.slaMin).slice(0, 3);
+      }, [tickets]);
+
+      const filtered = useMemo(() => {
+        return tickets.filter((t) => {
+          const query = ticketSearch.trim().toLocaleLowerCase("pt-BR");
+          if (query && ![t.id, t.title, t.requester, t.room, t.category].some((value) => value.toLocaleLowerCase("pt-BR").includes(query))) return false;
+          if (statusFilter === "Meus Atendimentos" && !(t.assignee === me && t.status === "em_atendimento")) return false;
+          if (statusFilter === "Pendentes" && t.status !== "aberto") return false;
+          if (statusFilter === "Fechados" && t.status !== "fechado") return false;
+          if (urgFilter === "Críticas" && t.urgency !== "critica") return false;
+          if (urgFilter === "Alta" && t.urgency !== "alta") return false;
+          if (urgFilter === "Média" && t.urgency !== "media") return false;
+          if (urgFilter === "Baixa" && t.urgency !== "baixa") return false;
+          return true;
+        });
+      }, [tickets, statusFilter, urgFilter, me, ticketSearch]);
+
+      const chats = tickets.filter((t) => t.assignee === me && t.status !== "fechado");
+
+      async function assumir(id) {
+        try {
+          const data = await requestApi(`/api/tickets/${encodeURIComponent(id)}/assume`, { method: "POST", csrf });
+          setTickets(data.tickets);
+          try {
+            await requestApi("/api/presence", { method: "PATCH", body: { presence: "Em Atendimento" }, csrf });
+          } catch (error) {
+            ping(`Chamado assumido, mas não foi possível salvar o status: ${error.message}`);
+            return;
+          }
+          setPresence("Em Atendimento");
+          setSession((current) => ({ ...current, presence: "Em Atendimento" }));
+          ping("Chamado assumido");
+        } catch (error) {
+          ping(error.message);
+          try {
+            await loadTickets();
+          } catch (refreshError) {
+            setServiceError(refreshError.message);
+          }
+        }
+      }
+
+      function abrirChat(id) {
+        setSelectedId(id);
+        setTab("chat");
+      }
+
+      async function enviar(text) {
+        const msg = (text || draft).trim();
+        if (!msg || !selected) return;
+        try {
+          const data = await requestApi(`/api/tickets/${encodeURIComponent(selected.id)}/messages`, { method: "POST", body: { text: msg }, csrf });
+          setTickets(data.tickets);
+          setDraft("");
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      async function resolver() {
+        if (!note.trim() || !selected) return;
+        try {
+          const data = await requestApi(`/api/tickets/${encodeURIComponent(selected.id)}/resolve`, { method: "POST", body: { note }, csrf });
+          setTickets(data.tickets);
+          setNote("");
+          setResolveOpen(false);
+          ping("Chamado encerrado");
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      async function criarChamado(e) {
+        e.preventDefault();
+        if (savingTicket || !novo.title.trim() || !novo.requester.trim()) return;
+        setSavingTicket(true);
+        try {
+          const data = await requestApi("/api/tickets", { method: "POST", body: novo, csrf });
+          setTickets((current) => [data.ticket, ...current.filter((ticket) => ticket.id !== data.ticket.id)]);
+          setNovo({ title: "", category: "Hardware", room: "Lab de Informática 01", requester: "", role: "Docente", urgency: "media" });
+          setNewOpen(false);
+          setStatusFilter("Todos");
+          setUrgFilter("Todas");
+          setTab("chamados");
+          ping(`Chamado ${data.ticket.id} registrado`);
+        } catch (error) {
+          ping(error.message);
+        } finally {
+          setSavingTicket(false);
+        }
+      }
+
+      async function setPcStatus(roomId, pcId, status) {
+        try {
+          const data = await requestApi(`/api/rooms/${encodeURIComponent(roomId)}/pcs/${encodeURIComponent(pcId)}`, { method: "PATCH", body: { status }, csrf });
+          setRooms(data.rooms);
+          const room = data.rooms.find((item) => item.id === roomId);
+          const pc = room?.pcs.find((item) => item.id === pcId);
+          if (pc) setPcModal((current) => current ? { ...current, pc } : current);
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      async function alterarPresenca(status) {
+        try {
+          await requestApi("/api/presence", { method: "PATCH", body: { presence: status }, csrf });
+          setPresence(status);
+          setSession((current) => ({ ...current, presence: status }));
+          setShowPresence(false);
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      async function uploadAnexo(event) {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file || !selected) return;
+        if (file.size > 10 * 1024 * 1024) {
+          ping("O arquivo deve ter no máximo 10 MB.");
+          return;
+        }
+        try {
+          const data = await requestApi(`/api/tickets/${encodeURIComponent(selected.id)}/attachments`, {
+            method: "POST",
+            body: file,
+            raw: true,
+            headers: { "Content-Type": "application/octet-stream", "X-File-Name": encodeURIComponent(file.name) },
+            csrf,
+          });
+          setTickets(data.tickets);
+          ping("Arquivo anexado ao chamado.");
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      async function cadastrarTecnico(event) {
+        event.preventDefault();
+        if (savingUser) return;
+        setSavingUser(true);
+        try {
+          const data = await requestApi("/api/users", {
+            method: "POST",
+            body: { name: newUser.nome, email: newUser.email, position: newUser.cargo, unit: newUser.unidade, password: newUser.senha },
+            csrf,
+          });
+          setUsers((current) => [...current, { ...data.user, ativo: true }].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")));
+          setNewUser({ nome: "", email: "", cargo: "Técnico de Suporte de TI", unidade: UNITS[0], senha: "" });
+          setNewUserOpen(false);
+          ping("Conta de técnico criada.");
+        } catch (error) {
+          ping(error.message);
+        } finally {
+          setSavingUser(false);
+        }
+      }
+
+      async function alterarSenha(event) {
+        event.preventDefault();
+        if (passwordChange.nova !== passwordChange.confirmar) {
+          ping("A confirmação da senha não confere.");
+          return;
+        }
+        try {
+          await requestApi("/api/password", {
+            method: "PATCH",
+            body: { currentPassword: passwordChange.atual, newPassword: passwordChange.nova },
+            csrf,
+          });
+          setPasswordChange({ atual: "", nova: "", confirmar: "" });
+          ping("Senha atualizada. Outras sessões foram encerradas.");
+        } catch (error) {
+          ping(error.message);
+        }
+      }
+
+      if (booting) {
+        return (
+          <Phone>
+            <div className="flex min-h-[100dvh] items-center justify-center bg-slate-100 p-6 text-sm font-medium text-slate-600">
+              Conectando ao ConectaTI...
+            </div>
+            <Style />
+          </Phone>
+        );
+      }
+
+      if (!session) {
+        return (
+          <Phone>
+            <div className="flex min-h-[100dvh] flex-col bg-slate-100">
+              <div className="bg-[#004587] px-5 pb-9 pt-10 text-white">
+                <Logo />
+                <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Suporte de tecnologia</p>
+                <h1 className="mt-2 text-2xl font-bold leading-tight">ConectaTI</h1>
+                <p className="mt-2 max-w-xs text-sm leading-6 text-white/80">Central de chamados, atendimento e ronda técnica do Senac DF.</p>
+              </div>
+              <form onSubmit={login} className="fade-in -mt-4 flex-1 rounded-t-3xl bg-white px-5 py-6 shadow-md">
+                <h2 className="mb-1 text-lg font-bold text-slate-900">Acessar sua conta</h2>
+                <p className="mb-5 text-sm text-slate-500">Use as credenciais fornecidas pelo administrador.</p>
+                <Field label="E-mail institucional" icon={I.mail}>
+                  <input className="input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value, erro: "" })} placeholder="nome@df.senac.br" autoComplete="username" required />
+                </Field>
+                <Field label="Senha do ConectaTI" icon={I.lock}>
+                  <input className="input" type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value, erro: "" })} placeholder="Sua senha" autoComplete="current-password" required />
+                </Field>
+                {serviceError ? <p className="mb-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">{serviceError}</p> : null}
+                {form.erro ? <p className="mb-3 text-sm font-medium text-red-600">{form.erro}</p> : null}
+                <button type="submit" disabled={!form.email || !form.senha} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#F68B1F] py-3.5 text-sm font-bold text-white shadow-md transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
+                  <Icon d={I.login} size={18} /> Entrar
+                </button>
+                <p className="mt-4 text-center text-xs leading-5 text-slate-500">A conta precisa ser criada pelo administrador do sistema. O acesso não utiliza o SSO institucional.</p>
+              </form>
+            </div>
+            <Style />
+          </Phone>
+        );
+      }
+
+      return (
+        <Phone>
+          <div className="flex min-h-[100dvh] flex-col bg-slate-100">
+            <header className="sticky top-0 z-20 bg-[#004587] px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))] text-white shadow-md">
+              <div className="flex items-center justify-between gap-2">
+                <Logo />
+                <button type="button" aria-expanded={showPresence} aria-label={`Status de presença: ${presence}`} onClick={() => setShowPresence((v) => !v)} className="rounded-full bg-white/15 px-2.5 py-1.5 text-[11px] font-semibold">
+                  <span className={`mr-1 inline-block h-2 w-2 rounded-full ${presence === "Online" ? "bg-emerald-400" : presence === "Ausente" ? "bg-slate-300" : "bg-[#F68B1F]"}`} />
+                  {presence}
+                </button>
+              </div>
+              <p className="mt-2 truncate text-xs text-white/80">{session.unidade}</p>
+              {showPresence ? (
+                <div className="fade-in mt-2 flex gap-1">
+                  {STATUSES.map((s) => (
+                    <button key={s} type="button" onClick={() => alterarPresenca(s)} className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${presence === s ? "bg-[#F68B1F] text-white" : "bg-white/15"}`}>{s}</button>
+                  ))}
+                </div>
+              ) : null}
+            </header>
+
+            <main className="fade-in flex-1 overflow-y-auto px-4 pb-28 pt-4">
+              {serviceError ? <div role="status" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Não foi possível atualizar os dados: {serviceError}</div> : null}
+              {tab === "inicio" && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#004587]">Bom plantão, {session.nome.split(" ")[0]}</p>
+                  <h2 className="mb-3 text-xl font-bold text-slate-900">Painel do técnico</h2>
+                  <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Os registros com selo Demonstração e o inventário de salas são dados ilustrativos. Substitua-os pelos dados validados da unidade antes do uso operacional.</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Kpi label="Chamados abertos" value={kpis.abertos} hint="Sem técnico" icon={I.inbox} />
+                    <Kpi label="Em atendimento" value={kpis.meus} hint="Sob sua responsabilidade" icon={I.wrench} tone="orange" />
+                    <Kpi label="SLA crítico" value={kpis.crit} hint="Urgentes / prazo" icon={I.alert} tone="alert" />
+                    <Kpi label="Resolvidos no dia" value={kpis.dia} hint="Produtividade" icon={I.check} tone="ok" />
+                  </div>
+                  <button type="button" onClick={() => setNewOpen(true)} className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#F68B1F] py-3.5 text-sm font-bold text-white shadow-md">
+                    <Icon d={I.plus} size={18} /> Registrar novo chamado / OS
+                  </button>
+                  <h3 className="mb-2 mt-5 text-sm font-bold text-slate-800">Fila prioritária</h3>
+                  <div className="space-y-2">
+                    {urgentes.map((t) => (
+                      <article key={t.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-bold text-[#004587]">{t.id}</span>
+                          <span className="flex items-center gap-1">{t.demo ? <DemoBadge /> : null}<UrgencyBadge u={t.urgency} /></span>
+                        </div>
+                        <p className="text-sm font-semibold text-slate-900">{t.title}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">{t.room} · {t.slaMin} min de SLA</p>
+                        <div className="mt-2 flex gap-2">
+                          <button type="button" onClick={() => assumir(t.id)} className="flex-1 rounded-xl bg-[#004587] py-2 text-xs font-bold text-white">Assumir chamado</button>
+                          <button type="button" onClick={() => abrirChat(t.id)} className="flex-1 rounded-xl border border-slate-200 py-2 text-xs font-bold text-slate-800">Abrir chat</button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tab === "chamados" && (
+                <div>
+                  <div className="mb-3 flex items-end justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{filtered.length} chamado(s)</p>
+                      <h2 className="text-xl font-bold text-[#004587]">Fila de TI</h2>
+                    </div>
+                    <button type="button" onClick={() => setNewOpen(true)} className="shrink-0 rounded-xl bg-[#F68B1F] px-3 py-2 text-xs font-bold text-white">Novo chamado</button>
+                  </div>
+                  <input className="input mb-3" type="search" value={ticketSearch} onChange={(e) => setTicketSearch(e.target.value)} placeholder="Buscar por chamado, solicitante ou sala" aria-label="Buscar chamados" />
+                  <div className="no-scrollbar mb-2 flex gap-1 overflow-x-auto">
+                    {["Todos", "Meus Atendimentos", "Pendentes", "Fechados"].map((s) => (
+                      <button key={s} type="button" onClick={() => setStatusFilter(s)} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${statusFilter === s ? "bg-[#004587] text-white" : "bg-white text-slate-600 border border-slate-200"}`}>{s}</button>
+                    ))}
+                  </div>
+                  <div className="no-scrollbar mb-3 flex gap-1 overflow-x-auto">
+                    {["Todas", "Críticas", "Alta", "Média", "Baixa"].map((s) => (
+                      <button key={s} type="button" onClick={() => setUrgFilter(s)} className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ${urgFilter === s ? "bg-[#F68B1F] text-white" : "bg-white text-slate-600 border border-slate-200"}`}>{s}</button>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    {filtered.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-slate-500">Nenhum chamado neste filtro.</p> : null}
+                    {filtered.map((t) => (
+                      <article key={t.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-[11px] font-bold text-[#004587]">{t.id}</p>
+                            <h3 className="text-sm font-semibold text-slate-900">{t.title}</h3>
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-1">
+                            <UrgencyBadge u={t.urgency} />
+                            {t.demo ? <DemoBadge /> : null}
+                          </div>
+                        </div>
+                        <p className="mt-1 text-xs text-slate-500">{t.category} · {t.room}</p>
+                        <p className="text-xs text-slate-600">{t.requester} · {t.role}</p>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <SlaBadge min={t.slaMin} closed={t.status === "fechado"} />
+                          <span className="text-[11px] text-slate-400">{t.assignee ? t.assignee : "Sem técnico"}</span>
+                        </div>
+                        <div className="mt-2 flex gap-2">
+                          {t.status !== "fechado" && t.assignee !== me ? (
+                            <button type="button" onClick={() => assumir(t.id)} className="flex-1 rounded-xl bg-[#004587] py-2 text-xs font-bold text-white">Assumir atendimento</button>
+                          ) : null}
+                          <button type="button" onClick={() => abrirChat(t.id)} className="flex-1 rounded-xl border border-[#F68B1F] py-2 text-xs font-bold text-[#004587]">Abrir chat</button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tab === "chat" && (
+                <div className="flex h-full min-h-[60vh] flex-col">
+                  {!selected ? (
+                    <div>
+                      <h2 className="mb-3 text-xl font-bold text-[#004587]">Chat SLA</h2>
+                      {chats.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-slate-500">Assuma um chamado para abrir o atendimento.</p> : null}
+                      <div className="space-y-2">
+                        {chats.map((t) => (
+                          <button key={t.id} type="button" onClick={() => setSelectedId(t.id)} className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-left shadow-sm">
+                            <p className="text-[11px] font-bold text-[#004587]">{t.id}</p>
+                            <p className="text-sm font-semibold text-slate-900">{t.title}</p>
+                            <p className="text-xs text-slate-500">{t.messages[t.messages.length - 1]?.text}</p>
+                          </button>
+                        ))}
+                        <button type="button" onClick={() => setTab("chamados")} className="text-sm font-semibold text-[#004587]">Ver fila completa</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex min-h-[62vh] flex-col">
+                      <button type="button" onClick={() => setSelectedId(null)} className="mb-2 text-left text-xs font-semibold text-[#004587]">Voltar às conversas</button>
+                      <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-[11px] font-bold text-[#004587]">{selected.id}</p>
+                            <h3 className="text-sm font-bold text-slate-900">{selected.title}</h3>
+                            <p className="text-xs text-slate-500">{selected.room} · {selected.requester}</p>
+                          </div>
+                          <SlaBadge min={selected.slaMin} closed={selected.status === "fechado"} />
+                        </div>
+                      </div>
+                      <div ref={chatRef} className="mt-2 flex-1 space-y-2 overflow-y-auto rounded-2xl bg-white p-3">
+                        {selected.messages.map((m, i) => {
+                          const mine = m.role === "Suporte";
+                          return (
+                            <div key={i} className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${mine ? "ml-auto bg-[#004587] text-white" : "bg-slate-100 text-slate-800"}`}>
+                              <p className={`text-[10px] font-semibold ${mine ? "text-white/70" : "text-slate-500"}`}>{m.who} · {m.role} · {m.time}</p>
+                              {m.attachmentId ? <a href={`/api/attachments/${m.attachmentId}`} className={`mt-1 block break-all underline ${mine ? "text-white" : "text-[#004587]"}`}>Baixar anexo: {m.attachmentName}</a> : <p className="whitespace-pre-wrap break-words">{m.text}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="no-scrollbar mt-2 flex gap-2 overflow-x-auto">
+                        {MACROS.map((m) => (
+                          <button key={m} type="button" disabled={selected.status === "fechado"} onClick={() => enviar(m)} className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 disabled:opacity-40">{m}</button>
+                        ))}
+                      </div>
+                      <div className="mt-2 flex gap-2">
+                        <input ref={fileInputRef} className="hidden" type="file" accept=".jpg,.jpeg,.png,.pdf,.txt,.doc,.docx,.xls,.xlsx" onChange={uploadAnexo} />
+                        <button type="button" disabled={selected.status === "fechado"} onClick={() => fileInputRef.current?.click()} className="rounded-xl border border-slate-200 bg-white px-3 text-slate-600 disabled:opacity-40" aria-label="Anexar arquivo"><Icon d={I.paper} size={18} /></button>
+                        <input className="input mb-0" value={draft} disabled={selected.status === "fechado"} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); enviar(); } }} placeholder="Mensagem ao solicitante" />
+                        <button type="button" disabled={selected.status === "fechado" || !draft.trim()} onClick={() => enviar()} className="rounded-xl bg-[#F68B1F] px-3 text-white disabled:opacity-40" aria-label="Enviar mensagem"><Icon d={I.send} size={18} /></button>
+                      </div>
+                      {selected.status !== "fechado" ? (
+                        <button type="button" onClick={() => setResolveOpen(true)} className="mt-2 w-full rounded-2xl bg-emerald-600 py-3 text-sm font-bold text-white">Encerrar / Resolver</button>
+                      ) : <p className="mt-2 text-center text-xs font-semibold text-emerald-700">Chamado encerrado com nota técnica.</p>}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {tab === "salas" && (
+                <div>
+                  <h2 className="text-xl font-bold text-[#004587]">Mapa e ronda</h2>
+                  <p className="mb-3 text-xs text-slate-500">{session.unidade}</p>
+                  <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Inventário inicial ilustrativo. Confirme computadores, especificações e salas com a unidade antes de usar como registro operacional.</p>
+                  <div className="space-y-3">
+                    {rooms.map((room) => {
+                      const ok = room.pcs.filter((p) => p.status === "ok").length;
+                      const pct = Math.round((ok / room.pcs.length) * 100);
+                      return (
+                        <section key={room.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                          <div className="mb-2 flex items-center justify-between">
+                            <div>
+                              <h3 className="text-sm font-bold text-slate-900">{room.name}</h3>
+                              <p className="text-xs text-slate-500">{ok}/{room.pcs.length} máquinas operacionais</p>
+                            </div>
+                            <span className={`rounded-full px-2 py-1 text-xs font-bold ${pct >= 90 ? "bg-emerald-50 text-emerald-700" : pct >= 75 ? "bg-amber-50 text-amber-800" : "bg-red-50 text-red-700"}`}>{pct}%</span>
+                          </div>
+                          <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                            <div className="h-full bg-[#004587]" style={{ width: pct + "%" }} />
+                          </div>
+                          <div className="grid grid-cols-6 gap-1.5">
+                            {room.pcs.map((pc) => (
+                              <button key={pc.id} type="button" onClick={() => setPcModal({ roomId: room.id, roomName: room.name, pc })} className={`rounded-lg py-2 text-[10px] font-bold text-white ${pcStatusMeta(pc.status).cls}`}>{pc.id.replace("PC-", "")}</button>
+                            ))}
+                          </div>
+                        </section>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {tab === "perfil" && (
+                <div>
+                  <h2 className="mb-3 text-xl font-bold text-[#004587]">Perfil</h2>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#004587] text-xl font-bold text-white">{initials(session.nome)}</div>
+                    <p className="mt-3 text-lg font-bold text-slate-900">{session.nome}</p>
+                    <p className="text-sm text-slate-600">{session.cargo}</p>
+                    <p className="text-sm text-[#004587]">{session.email}</p>
+                    <p className="mt-1 text-xs text-slate-500">{session.unidade}</p>
+                    <p className="mt-2 text-xs font-semibold text-slate-700">Status: {presence}</p>
+                  </div>
+                  {!editProfile ? (
+                    <button type="button" onClick={() => { setEdit({ nome: session.nome, email: session.email, cargo: session.cargo, unidade: session.unidade }); setEditProfile(true); }} className="mt-3 w-full rounded-2xl border border-slate-200 bg-white py-3 text-sm font-bold text-[#004587]">Editar perfil</button>
+                  ) : (
+                    <form className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" onSubmit={async (e) => {
+                      e.preventDefault();
+                      try {
+                        const data = await requestApi("/api/profile", { method: "PATCH", body: { name: edit.nome, email: edit.email, position: edit.cargo, unit: edit.unidade }, csrf });
+                        setSession(data.user);
+                        setEditProfile(false);
+                        ping("Perfil atualizado");
+                      } catch (error) {
+                        ping(error.message);
+                      }
+                    }}>
+                      <label className="label">Nome</label>
+                      <input className="input" value={edit.nome} onChange={(e) => setEdit({ ...edit, nome: e.target.value })} required maxLength={100} />
+                      <label className="label">E-mail</label>
+                      <input className="input" type="email" value={edit.email} onChange={(e) => setEdit({ ...edit, email: e.target.value })} required />
+                      <label className="label">Cargo</label>
+                      <input className="input" value={edit.cargo} onChange={(e) => setEdit({ ...edit, cargo: e.target.value })} maxLength={100} />
+                      <label className="label">Unidade</label>
+                      <select className="input" value={edit.unidade} onChange={(e) => setEdit({ ...edit, unidade: e.target.value })}>
+                        {UNITS.map((u) => <option key={u}>{u}</option>)}
+                      </select>
+                      <button type="submit" className="w-full rounded-xl bg-[#004587] py-2.5 text-sm font-bold text-white">Salvar</button>
+                    </form>
+                  )}
+                  <form onSubmit={alterarSenha} className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 className="mb-1 text-sm font-bold text-slate-900">Segurança da conta</h3>
+                    <p className="mb-3 text-xs text-slate-500">Use uma senha exclusiva com pelo menos 12 caracteres.</p>
+                    <label className="label">Senha atual</label>
+                    <input className="input" type="password" value={passwordChange.atual} onChange={(e) => setPasswordChange({ ...passwordChange, atual: e.target.value })} autoComplete="current-password" required />
+                    <label className="label">Nova senha</label>
+                    <input className="input" type="password" value={passwordChange.nova} onChange={(e) => setPasswordChange({ ...passwordChange, nova: e.target.value })} minLength={12} maxLength={200} autoComplete="new-password" required />
+                    <label className="label">Confirmar nova senha</label>
+                    <input className="input" type="password" value={passwordChange.confirmar} onChange={(e) => setPasswordChange({ ...passwordChange, confirmar: e.target.value })} minLength={12} maxLength={200} autoComplete="new-password" required />
+                    <button className="w-full rounded-xl border border-slate-200 py-2.5 text-sm font-bold text-[#004587]">Atualizar senha</button>
+                  </form>
+                  {session.role === "admin" ? (
+                    <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">Contas de técnicos</h3>
+                          <p className="text-xs text-slate-500">{users.length} conta(s) cadastrada(s)</p>
+                        </div>
+                        <button type="button" onClick={() => setNewUserOpen(true)} className="shrink-0 rounded-xl bg-[#004587] px-3 py-2 text-xs font-bold text-white">Adicionar</button>
+                      </div>
+                      <ul className="divide-y divide-slate-100">
+                        {users.map((user) => (
+                          <li key={user.id} className="py-2">
+                            <p className="text-sm font-semibold text-slate-800">{user.nome}{user.role === "admin" ? " · Admin" : ""}</p>
+                            <p className="break-all text-xs text-slate-500">{user.email} · {user.unidade}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+                  <button type="button" onClick={logout} className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 py-3 text-sm font-bold text-white">
+                    <Icon d={I.log} size={16} /> Sair
+                  </button>
+                </div>
+              )}
+            </main>
+
+            <nav aria-label="Navegação principal" className="safe-nav fixed bottom-0 left-1/2 z-30 flex w-full max-w-md -translate-x-1/2 justify-around border-t border-slate-200 bg-white px-1 pt-2 shadow-md">
+              {[
+                ["inicio", "Início", I.home],
+                ["chamados", "Chamados", I.inbox],
+                ["chat", "Chat SLA", I.msg],
+                ["salas", "Salas", I.map],
+                ["perfil", "Perfil", I.user],
+              ].map(([id, label, icon]) => (
+                <button key={id} type="button" onClick={() => setTab(id)} className={`flex flex-col items-center gap-0.5 rounded-xl px-2 py-1 text-[10px] font-semibold ${tab === id ? "text-[#F68B1F]" : "text-slate-500"}`}>
+                  <Icon d={icon} size={18} />
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            {newOpen ? (
+              <Modal title="Nova ordem de serviço" onClose={() => setNewOpen(false)}>
+                <form onSubmit={criarChamado}>
+                  <label className="label">Título</label>
+                  <input className="input" value={novo.title} onChange={(e) => setNovo({ ...novo, title: e.target.value })} required />
+                  <label className="label">Categoria</label>
+                  <select className="input" value={novo.category} onChange={(e) => setNovo({ ...novo, category: e.target.value })}>{CATS.map((c) => <option key={c}>{c}</option>)}</select>
+                  <label className="label">Sala</label>
+                  <input className="input" value={novo.room} onChange={(e) => setNovo({ ...novo, room: e.target.value })} />
+                  <label className="label">Solicitante</label>
+                  <input className="input" value={novo.requester} onChange={(e) => setNovo({ ...novo, requester: e.target.value })} required />
+                  <label className="label">Cargo</label>
+                  <input className="input" value={novo.role} onChange={(e) => setNovo({ ...novo, role: e.target.value })} />
+                  <label className="label">Urgência</label>
+                  <select className="input" value={novo.urgency} onChange={(e) => setNovo({ ...novo, urgency: e.target.value })}>
+                    <option value="critica">Crítica</option>
+                    <option value="alta">Alta</option>
+                    <option value="media">Média</option>
+                    <option value="baixa">Baixa</option>
+                  </select>
+                  <button disabled={savingTicket} className="w-full rounded-xl bg-[#F68B1F] py-3 text-sm font-bold text-white disabled:opacity-50">{savingTicket ? "Registrando..." : "Registrar chamado"}</button>
+                </form>
+              </Modal>
+            ) : null}
+
+            {newUserOpen ? (
+              <Modal title="Cadastrar técnico" onClose={() => setNewUserOpen(false)}>
+                <form onSubmit={cadastrarTecnico}>
+                  <label className="label">Nome completo</label>
+                  <input className="input" value={newUser.nome} onChange={(e) => setNewUser({ ...newUser, nome: e.target.value })} required maxLength={100} />
+                  <label className="label">E-mail institucional</label>
+                  <input className="input" type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="nome@df.senac.br" required />
+                  <label className="label">Cargo</label>
+                  <input className="input" value={newUser.cargo} onChange={(e) => setNewUser({ ...newUser, cargo: e.target.value })} maxLength={100} />
+                  <label className="label">Unidade</label>
+                  <select className="input" value={newUser.unidade} onChange={(e) => setNewUser({ ...newUser, unidade: e.target.value })}>
+                    {UNITS.map((unit) => <option key={unit}>{unit}</option>)}
+                  </select>
+                  <label className="label">Senha inicial (mínimo 12 caracteres)</label>
+                  <input className="input" type="password" value={newUser.senha} onChange={(e) => setNewUser({ ...newUser, senha: e.target.value })} minLength={12} maxLength={200} autoComplete="new-password" required />
+                  <button disabled={savingUser} className="w-full rounded-xl bg-[#F68B1F] py-3 text-sm font-bold text-white disabled:opacity-50">{savingUser ? "Criando conta..." : "Criar conta"}</button>
+                </form>
+              </Modal>
+            ) : null}
+
+            {resolveOpen ? (
+              <Modal title="Nota de solução técnica" onClose={() => setResolveOpen(false)}>
+                <p className="mb-2 text-xs text-slate-500">Obrigatória para encerrar o chamado.</p>
+                <textarea className="input min-h-28" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex.: Substituição de fonte de alimentação efetuada" />
+                <button type="button" disabled={!note.trim()} onClick={resolver} className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white disabled:opacity-40">Salvar e encerrar</button>
+              </Modal>
+            ) : null}
+
+            {pcModal ? (
+              <Modal title={pcModal.pc.id + " · " + pcModal.roomName} onClose={() => setPcModal(null)}>
+                <div className={`mb-3 rounded-xl border px-3 py-2 text-sm font-semibold ${pcStatusMeta(pcModal.pc.status).soft}`}>{pcStatusMeta(pcModal.pc.status).label}</div>
+                <ul className="mb-3 space-y-1 text-sm text-slate-700">
+                  <li className="flex items-center gap-2"><Icon d={I.cpu} size={16} /> {pcModal.pc.cpu}</li>
+                  <li>RAM: {pcModal.pc.ram}</li>
+                  <li>SSD: {pcModal.pc.ssd}</li>
+                </ul>
+                <p className="mb-1 text-xs font-bold uppercase text-slate-500">Histórico</p>
+                <ul className="mb-3 list-disc pl-4 text-xs text-slate-600">{pcModal.pc.history.map((h, i) => <li key={i}>{h}</li>)}</ul>
+                <p className="mb-2 text-xs font-bold text-slate-700">Alterar status</p>
+                <div className="grid gap-2">
+                  <button type="button" onClick={() => setPcStatus(pcModal.roomId, pcModal.pc.id, "ok")} className="rounded-xl bg-emerald-600 py-2 text-sm font-bold text-white">Operacional (OK)</button>
+                  <button type="button" onClick={() => setPcStatus(pcModal.roomId, pcModal.pc.id, "atendimento")} className="rounded-xl bg-amber-500 py-2 text-sm font-bold text-white">Em atendimento</button>
+                  <button type="button" onClick={() => setPcStatus(pcModal.roomId, pcModal.pc.id, "inoperante")} className="rounded-xl bg-red-600 py-2 text-sm font-bold text-white">Inoperante</button>
+                </div>
+              </Modal>
+            ) : null}
+
+            {toast ? <div role="status" aria-live="polite" className="toast-safe fixed left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-md">{toast}</div> : null}
+          </div>
+          <Style />
+        </Phone>
+      );
+    }
+
+    function Phone({ children }) {
+      return <div className="mx-auto min-h-[100dvh] w-full max-w-md bg-slate-100 shadow-xl">{children}</div>;
+    }
+    function Field({ label, icon, children }) {
+      return (
+        <label className="mb-3 block">
+          <span className="mb-1 flex items-center gap-1 text-xs font-semibold text-slate-700"><Icon d={icon} size={14} /> {label}</span>
+          {children}
+        </label>
+      );
+    }
+    function Kpi({ label, value, hint, icon, tone }) {
+      const ring = tone === "orange" ? "text-[#F68B1F]" : tone === "alert" ? "text-red-600" : tone === "ok" ? "text-emerald-600" : "text-[#004587]";
+      return (
+        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+          <div className={`mb-1 ${ring}`}><Icon d={icon} size={18} /></div>
+          <p className="text-2xl font-bold text-slate-900">{value}</p>
+          <p className="text-xs font-semibold text-slate-800">{label}</p>
+          <p className="text-[11px] text-slate-500">{hint}</p>
+        </div>
+      );
+    }
+    function Modal({ title, onClose, children }) {
+      useEffect(() => {
+        const closeOnEscape = (event) => {
+          if (event.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", closeOnEscape);
+        return () => window.removeEventListener("keydown", closeOnEscape);
+      }, [onClose]);
+
+      return (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 sm:items-center" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+          <div className="fade-in max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-md sm:rounded-3xl" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 id="modal-heading" className="text-base font-bold text-[#004587]">{title}</h3>
+              <button type="button" onClick={onClose} className="rounded-full p-1 text-slate-500" aria-label="Fechar"><Icon d={I.x} /></button>
+            </div>
+            {children}
+          </div>
+        </div>
+      );
+    }
+    function Style() {
+      return (
+        <style>{`
+          .input { width: 100%; min-height: 2.75rem; margin-bottom: 0.75rem; border-radius: 0.85rem; border: 1px solid #e2e8f0; background: #fff; padding: 0.7rem 0.8rem; font-size: 0.875rem; color: #0f172a; outline: none; }
+          .input:focus { border-color: #004587; box-shadow: 0 0 0 3px rgba(0,69,135,.12); }
+          .input:disabled { background: #f1f5f9; color: #64748b; }
+          .label { display: block; margin-bottom: 0.25rem; font-size: 0.75rem; font-weight: 600; color: #334155; }
+          .safe-nav { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+          .toast-safe { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+          button:focus-visible, a:focus-visible { outline: 3px solid #f68b1f; outline-offset: 2px; }
+        `}</style>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
