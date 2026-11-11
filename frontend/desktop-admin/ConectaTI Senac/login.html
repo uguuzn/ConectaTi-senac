@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Entrar</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-orbs"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
+    <div class="auth">
+        <div class="auth-card">
+            <div class="brand center">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <h2>Acesse sua conta</h2>
+            <p class="muted">Use as credenciais cadastradas na plataforma.</p>
+            <form class="form" onsubmit="return validarLogin(event)" novalidate>
+                <label>E-mail
+                    <input type="email" id="email" placeholder="seu@senacdf.com.br" autocomplete="email">
+                </label>
+                <label>Senha
+                    <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
+                </label>
+                <div class="alerta erro" id="loginAlerta" style="display:none"></div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+                <a href="index.html" class="link center">Voltar para o início</a>
+            </form>
+        </div>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

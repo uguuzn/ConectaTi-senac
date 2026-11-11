@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Categorias</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Categorias</h1><p class="muted">Categorias usadas na abertura de chamados.</p></div>
+                </header>
+                <section class="filters card">
+                    <input type="text" id="buscaCategorias" placeholder="Buscar categorias..." aria-label="Buscar categorias" oninput="filtrarCategorias()">
+                    <select id="filtroStatusCategoria" aria-label="Filtrar por status" onchange="filtrarCategorias()">
+                        <option value="todos">Todas</option>
+                        <option value="Ativa">Ativa</option>
+                        <option value="Inativa">Inativa</option>
+                    </select>
+                </section>
+                <section class="card">
+                    <div class="table-wrap">
+                        <table class="tabela">
+                            <thead><tr><th>Categoria</th><th>Descrição</th><th>Chamados</th><th>Cor</th><th>Status</th><th>Criado em</th></tr></thead>
+                            <tbody id="listaCategorias"></tbody>
+                        </table>
+                    </div>
+                    <p class="muted" id="resultadoContador"></p>
+                </section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        const categorias = [
+            { nome: 'Reserva de notebooks', descricao: 'Solicitação de reserva de notebooks para aulas', chamados: 12, cor: 'primary', status: 'Ativa', data: '01/01/2026' },
+            { nome: 'Problema com Internet', descricao: 'Falhas de conexão com a internet', chamados: 8, cor: 'danger', status: 'Ativa', data: '15/01/2026' },
+            { nome: 'Projetor', descricao: 'Problemas com projetores multimídia', chamados: 6, cor: 'warning', status: 'Ativa', data: '20/01/2026' },
+            { nome: 'Computador com defeito', descricao: 'Computadores com problemas de hardware', chamados: 5, cor: 'danger', status: 'Ativa', data: '25/01/2026' },
+            { nome: 'Instalação de Software', descricao: 'Solicitação de instalação de programas', chamados: 4, cor: 'info', status: 'Ativa', data: '01/02/2026' },
+            { nome: 'Impressora', descricao: 'Problemas com impressoras e scanners', chamados: 3, cor: 'warning', status: 'Ativa', data: '10/02/2026' },
+            { nome: 'Cabo HDMI/Adaptador', descricao: 'Solicitação de cabos e adaptadores', chamados: 2, cor: 'accent', status: 'Ativa', data: '15/02/2026' },
+            { nome: 'Mouse', descricao: 'Solicitação de mouses para computadores', chamados: 2, cor: 'success', status: 'Ativa', data: '20/02/2026' },
+            { nome: 'Teclado', descricao: 'Solicitação de teclados para computadores', chamados: 1, cor: 'success', status: 'Ativa', data: '25/02/2026' },
+            { nome: 'Outros', descricao: 'Demais solicitações não categorizadas', chamados: 2, cor: 'primary', status: 'Ativa', data: '01/03/2026' },
+            { nome: 'Antiga - Redes', descricao: 'Categoria antiga de redes (desativada)', chamados: 0, cor: 'danger', status: 'Inativa', data: '10/03/2026' },
+            { nome: 'Antiga - Backup', descricao: 'Categoria antiga de backup (desativada)', chamados: 0, cor: 'danger', status: 'Inativa', data: '15/03/2026' }
+        ];
+
+        function getCategoriaCor(cor) {
+            return '<span class="categoria-tag ' + (cor || 'primary') + '">&#9679; ' + (cor || 'primary').charAt(0).toUpperCase() + (cor || 'primary').slice(1) + '</span>';
+        }
+
+        function getBadgeCategoria(status) {
+            const classes = { 'Ativa': 'active', 'Inativa': 'inactive' };
+            return '<span class="categoria-status ' + (classes[status] || 'inactive') + '">' + status + '</span>';
+        }
+
+        function exibirCategorias() {
+            const tbody = document.getElementById('listaCategorias');
+            const busca = document.getElementById('buscaCategorias')?.value.toLowerCase() || '';
+            const status = document.getElementById('filtroStatusCategoria')?.value || 'todos';
+
+            let filtrados = categorias.filter(c => {
+                const matchBusca = c.nome.toLowerCase().includes(busca) || c.descricao.toLowerCase().includes(busca);
+                const matchStatus = status === 'todos' || c.status === status;
+                return matchBusca && matchStatus;
+            });
+
+            tbody.innerHTML = filtrados.map(c => `
+                <tr>
+                    <td><b>${c.nome}</b></td>
+                    <td>${c.descricao}</td>
+                    <td><span class="categoria-tag info">${c.chamados} chamados</span></td>
+                    <td>${getCategoriaCor(c.cor)}</td>
+                    <td>${getBadgeCategoria(c.status)}</td>
+                    <td>${c.data}</td>
+                </tr>
+            `).join('');
+
+            const contador = document.getElementById('resultadoContador');
+            if (contador) contador.textContent = `Mostrando ${filtrados.length} categoria${filtrados.length > 1 ? 's' : ''}`;
+        }
+
+        function filtrarCategorias() { exibirCategorias(); }
+
+        document.addEventListener('DOMContentLoaded', exibirCategorias);
+    </script>
+</body>
+</html>

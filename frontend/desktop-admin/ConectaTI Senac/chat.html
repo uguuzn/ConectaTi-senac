@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Chat</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Chat</h1><p class="muted">Converse sobre um chamado com o solicitante ou o técnico.</p></div>
+                </header>
+                <p class="alerta erro" id="chatErro" style="display:none"></p>
+                <div class="chat-layout">
+                    <div class="card">
+                        <h3>Chamados</h3>
+                        <div class="chat-lista" id="chatListaChamados"></div>
+                    </div>
+                    <div class="chat-painel">
+                        <div class="chat-topo">
+                            <h3 id="chatTitulo">Selecione um chamado</h3>
+                            <button class="btn btn-sm btn-outline" id="btnAtualizarChat">Atualizar</button>
+                        </div>
+                        <div class="chat-mensagens" id="chatMensagens">
+                            <div class="chat-vazio">Selecione um chamado à esquerda para ver as mensagens.</div>
+                        </div>
+                        <div class="chat-envio">
+                            <input type="text" id="chatInput" placeholder="Digite sua mensagem..." aria-label="Mensagem">
+                            <button class="btn btn-primary" id="btnEnviarChat">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

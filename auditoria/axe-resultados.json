@@ -1,0 +1,244 @@
+[
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "acompanhar-chamado.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "admin.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "auditoria.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "categorias.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "chamados.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "chat.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "configuracoes.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "criar-unidade.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "criar-usuario.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "dashboard.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "duvidas-frequentes.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "equipamentos.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "gerenciar-chamado.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 10
+    },
+    "1440": {
+      "violations": [],
+      "passes": 10
+    },
+    "page": "index.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "login.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "manutencao.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "mapa-salas.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "minhas-turmas.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "novo-chamado.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "relatorios.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "unidades.html"
+  },
+  {
+    "390": {
+      "violations": [],
+      "passes": 14
+    },
+    "1440": {
+      "violations": [],
+      "passes": 14
+    },
+    "page": "usuarios.html"
+  }
+]

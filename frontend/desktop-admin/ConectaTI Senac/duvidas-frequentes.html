@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Dúvidas Frequentes</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Dúvidas Frequentes</h1><p class="muted">Perguntas e respostas sobre o sistema.</p></div>
+                </header>
+                <section class="filters card">
+                    <input type="text" id="buscaDuvidas" placeholder="Buscar dúvidas..." aria-label="Buscar dúvidas" oninput="filtrarDuvidas()">
+                    <select id="filtroCategoriaDuvida" aria-label="Filtrar por categoria" onchange="filtrarDuvidas()">
+                        <option value="todos">Todas</option>
+                        <option value="Chamados">Chamados</option>
+                        <option value="Equipamentos">Equipamentos</option>
+                        <option value="Reservas">Reservas</option>
+                        <option value="Suporte">Suporte</option>
+                    </select>
+                </section>
+                <section id="listaDuvidas"></section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        const duvidas = [
+            { id: 1, pergunta: 'Como reservar notebooks para minha turma?',
+              resposta: 'Acesse o menu "Novo Chamado", selecione a categoria "Reserva de notebooks", informe a quantidade de notebooks, a data e o horário desejados. O suporte confirmará a reserva em até 2 horas úteis.',
+              categoria: 'Reservas', icone: '📚' },
+            { id: 2, pergunta: 'O que fazer se o projetor não funcionar?',
+              resposta: 'Verifique se o projetor está ligado e todos os cabos estão conectados corretamente. Se o problema persistir, abra um chamado na categoria "Projetor" informando a sala e o problema observado.',
+              categoria: 'Equipamentos', icone: '📽️' },
+            { id: 3, pergunta: 'Como acompanhar o status do meu chamado?',
+              resposta: 'Acesse o menu "Acompanhar Chamado" onde você verá todos os seus chamados com o status atual. Você também pode ver o histórico completo de cada chamado.',
+              categoria: 'Chamados', icone: '📋' },
+            { id: 4, pergunta: 'Qual o prazo para atendimento de um chamado?',
+              resposta: 'Chamados com prioridade "Urgente" são atendidos em até 2 horas. Chamados com prioridade "Alta" em até 4 horas. Os demais chamados têm prazo de até 24 horas úteis.',
+              categoria: 'Chamados', icone: '⏱️' },
+            { id: 5, pergunta: 'Como solicitar um novo equipamento?',
+              resposta: 'Para solicitar um novo equipamento, abra um chamado na categoria correspondente (Notebook, Projetor, etc.) e descreva a necessidade. A coordenação analisará a solicitação.',
+              categoria: 'Equipamentos', icone: '💻' },
+            { id: 6, pergunta: 'Esqueci minha senha, como recuperar?',
+              resposta: 'Entre em contato com o administrador do sistema para redefinir sua senha. Fale com o suporte pelo chat se precisar de ajuda.',
+              categoria: 'Suporte', icone: '🔑' },
+            { id: 7, pergunta: 'Como funciona o chat de suporte?',
+              resposta: 'Abra o menu "Chat", selecione um chamado e envie mensagens ao técnico responsável. As mensagens ficam vinculadas ao chamado.',
+              categoria: 'Suporte', icone: '💬' },
+            { id: 8, pergunta: 'Posso cancelar um chamado já aberto?',
+              resposta: 'Sim. Chamados com status "Aberto" podem ser cancelados pelo Suporte TI mediante justificativa.',
+              categoria: 'Chamados', icone: '❌' }
+        ];
+
+        function getCategoriaClass(categoria) {
+            const classes = { 'Chamados': 'chamados', 'Equipamentos': 'equipamentos', 'Reservas': 'reservas', 'Suporte': 'suporte', 'Sistema': 'suporte' };
+            return classes[categoria] || 'suporte';
+        }
+
+        function exibirDuvidas() {
+            const container = document.getElementById('listaDuvidas');
+            const busca = document.getElementById('buscaDuvidas')?.value.toLowerCase() || '';
+            const categoria = document.getElementById('filtroCategoriaDuvida')?.value || 'todos';
+
+            let filtrados = duvidas.filter(d => {
+                const matchBusca = d.pergunta.toLowerCase().includes(busca) || d.resposta.toLowerCase().includes(busca);
+                const matchCategoria = categoria === 'todos' || d.categoria === categoria;
+                return matchBusca && matchCategoria;
+            });
+
+            container.innerHTML = filtrados.map(d => `
+                <div class="duvida-card" onclick="toggleDuvida(${d.id})">
+                    <div class="pergunta">
+                        <span>
+                            <span class="icon">${d.icone}</span>
+                            ${d.pergunta}
+                        </span>
+                        <span class="toggle" id="toggle-${d.id}">▼</span>
+                    </div>
+                    <div class="resposta" id="resposta-${d.id}">
+                        ${d.resposta}
+                        <div>
+                            <span class="categoria ${getCategoriaClass(d.categoria)}">${d.categoria}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (filtrados.length === 0) {
+                container.innerHTML = '<p class="muted center">Nenhuma dúvida encontrada.</p>';
+            }
+        }
+
+        function toggleDuvida(id) {
+            const resposta = document.getElementById(`resposta-${id}`);
+            const toggle = document.getElementById(`toggle-${id}`);
+            if (resposta && toggle) {
+                resposta.classList.toggle('open');
+                toggle.classList.toggle('open');
+            }
+        }
+
+        function filtrarDuvidas() { exibirDuvidas(); }
+
+        document.addEventListener('DOMContentLoaded', exibirDuvidas);
+    </script>
+</body>
+</html>

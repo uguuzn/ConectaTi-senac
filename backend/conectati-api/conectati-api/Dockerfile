@@ -9,7 +9,7 @@ COPY settings.gradle .
 COPY src src
 
 RUN chmod +x gradlew
-RUN ./gradlew clean build -x test
+RUN ./gradlew --no-daemon clean build
 
 FROM eclipse-temurin:17-jre
 

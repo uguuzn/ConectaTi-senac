@@ -1,0 +1,10 @@
+[
+  {
+    "device": "mobile",
+    "error": "Failed to fetch browser webSocket URL from http://127.0.0.1:9222/json/version: fetch failed"
+  },
+  {
+    "device": "desktop",
+    "error": "Failed to fetch browser webSocket URL from http://127.0.0.1:9222/json/version: fetch failed"
+  }
+]

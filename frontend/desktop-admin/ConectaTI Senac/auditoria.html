@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Configurações</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Configurações</h1><p class="muted">Preferências locais deste navegador.</p></div>
+                </header>
+                <section class="charts">
+                    <div class="card">
+                        <h3>Preferências</h3>
+                        <form class="form">
+                            <label style="flex-direction:row;align-items:center;gap:.6rem"><input type="checkbox" id="toggleNotificacoes" checked onchange="toggleNotificacoesConfig(this)"> Notificações na tela</label>
+                            <label style="flex-direction:row;align-items:center;gap:.6rem"><input type="checkbox" id="toggleEmail" onchange="toggleEmailConfig(this)"> Alertas por e-mail</label>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Regionalização</h3>
+                        <form class="form">
+                            <label>Idioma
+                                <select id="selectIdioma" onchange="mudarIdioma(this)">
+                                    <option value="pt-BR">Português (Brasil)</option>
+                                    <option value="en-US">English (US)</option>
+                                    <option value="es-ES">Español</option>
+                                </select>
+                            </label>
+                            <label>Formato de data
+                                <select id="selectData" onchange="mudarFormatoData(this)">
+                                    <option value="dd/mm/yyyy">dd/mm/aaaa</option>
+                                    <option value="mm/dd/yyyy">mm/dd/aaaa</option>
+                                    <option value="yyyy-mm-dd">aaaa-mm-dd</option>
+                                </select>
+                            </label>
+                            <label>Timeout da sessão em tela (segundos)
+                                <input type="number" id="inputTimeout" value="30" min="5" max="120" onchange="alterarTimeout(this)">
+                            </label>
+                        </form>
+                    </div>
+                </section>
+                <section class="card">
+                    <h3>Zona de manutenção</h3>
+                    <p class="muted" style="margin-bottom:1rem">Remove deste navegador: sessão, unidades, usuarios, salas, chaves e solicitações locais.</p>
+                    <button class="btn btn-primary" id="btnLimparDados" style="background:var(--grad-red)" onclick="limparDados()">Limpar dados locais</button>
+                </section>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+<script>
+
+        function toggleNotificacoesConfig(el) { toast(el.checked ? 'Notificações ativadas.' : 'Notificações desativadas.'); }
+        function toggleEmailConfig(el) { toast(el.checked ? 'Alertas por e-mail ativados.' : 'Alertas por e-mail desativados.'); }
+        function mudarIdioma(el) { toast('Idioma alterado para ' + el.value + ' (preferência local).'); }
+        function mudarFormatoData(el) { toast('Formato de data: ' + el.value + ' (preferência local).'); }
+        function alterarTimeout(el) { toast('Timeout da sessão em tela: ' + el.value + 's (preferência local).'); }
+        function limparDados() {
+            if (!confirm('Limpar todos os dados locais deste navegador (inclui sessão, unidades, usuarios, salas e solicitações)?')) return;
+            localStorage.clear();
+            toast('Dados locais limpos.');
+            setTimeout(() => { window.location.href = 'login.html'; }, 600);
+        }
+    </script>
+</body>
+</html>

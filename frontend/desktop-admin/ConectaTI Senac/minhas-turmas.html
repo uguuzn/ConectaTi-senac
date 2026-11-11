@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Minhas turmas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+                <span class="brand-name">ConectaTI <b>Senac</b></span>
+            </div>
+            <div class="perfil-pill" id="perfilPill">Perfil</div>
+            <nav>
+                <a href="index.html" data-menu="home">Inicio</a>
+                <a href="dashboard.html" data-menu="dashboard">Dashboard</a>
+                <a href="chamados.html" data-menu="chamados">Chamados</a>
+                <a href="novo-chamado.html" data-menu="novoChamado">Novo chamado</a>
+                <a href="equipamentos.html" data-menu="equipamentos">Equipamentos</a>
+                <a href="usuarios.html" data-menu="usuarios">Usuarios</a>
+                <a href="relatorios.html" data-menu="relatorios">Relatorios</a>
+                <a href="unidades.html" data-menu="unidades">Unidades</a>
+                <a href="minhas-turmas.html" data-menu="minhasTurmas">Minhas turmas</a>
+                <a href="mapa-salas.html" data-menu="mapaSalas">Mapa de salas</a>
+                <a href="admin.html" data-menu="administrar">Administracao</a>
+                <a href="login.html" class="logout" onclick="sair()">Sair</a>
+            </nav>
+        </aside>
+        <div class="app-main">
+            <main class="content">
+                <header class="topbar">
+                    <div><h1>Minhas turmas</h1><p class="muted">Visualize suas turmas e solicite uma sala para a aula.</p></div>
+                </header>
+                <section class="cards-grid" id="gridTurmas"></section>
+                <section class="card" style="margin-top:24px">
+                    <h3>Minhas solicitações de sala</h3>
+                    <div class="table-wrap">
+                        <table class="tabela">
+                            <thead><tr><th>Nº</th><th>Turma</th><th>Sala preferida</th><th>Data</th><th>Horário</th><th>Status</th><th>Sala atribuída</th></tr></thead>
+                            <tbody id="listaSolicitacoes"></tbody>
+                        </table>
+                    </div>
+                    <p class="muted center" id="solicitacoesVazio" style="display:none">Você ainda não fez solicitações.</p>
+                </section>
+                <div class="modal hidden" id="modalSolicitacao">
+                    <div class="modal-card">
+                        <h3 id="modalSolicitacaoTitulo">Solicitar sala</h3>
+                        <form class="form" id="formSolicitacao">
+                            <label>Data <input type="date" id="solData" required></label>
+                            <label>Horário <input type="time" id="solHora" required></label>
+                            <label>Sala preferida
+                                <select id="solSala"></select>
+                            </label>
+                            <label>Observação
+                                <textarea id="solObs" rows="3" placeholder="Ex.: preciso de projetor..."></textarea>
+                            </label>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-ghost" id="btnCancelarSolicitacao">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Enviar solicitação</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <button class="menu-toggle-floating" id="menuToggleFloating" aria-label="Abrir ou fechar menu">☰</button>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

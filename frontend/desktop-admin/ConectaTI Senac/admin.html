@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004b8d">
+    <title>ConectaTI Senac — Administracao</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="content admin-desktop">
+        <p class="muted" id="adminCarregando">Carregando administracao...</p>
+        <header class="topbar">
+            <div><h1>Administracao</h1><p class="muted">Visao de gerenciamento para computador.</p></div>
+            <div class="actions-row">
+                <a href="index.html" class="btn btn-outline">Abrir area web</a>
+                <a href="login.html" class="btn btn-ghost" onclick="sair()">Sair</a>
+            </div>
+        </header>
+        <p class="alerta erro" id="adminErro" style="display:none"></p>
+        <section class="cards-grid">
+            <div class="card kpi"><div><b id="adminUsuarios">0</b><small>Usuarios</small></div></div>
+            <div class="card kpi"><div><b id="adminChamados">0</b><small>Chamados</small></div></div>
+            <div class="card kpi"><div><b id="adminAbertos">0</b><small>Chamados abertos</small></div></div>
+            <div class="card kpi"><div><b id="adminEquipamentos">0</b><small>Equipamentos</small></div></div>
+        </section>
+        <section class="charts">
+            <div class="card">
+                <h3>Atalhos administrativos</h3>
+                <div class="actions-row">
+                    <a class="btn btn-primary" href="usuarios.html">Gerenciar usuarios</a>
+                    <a class="btn btn-outline" href="chamados.html">Todos os chamados</a>
+                    <a class="btn btn-outline" href="equipamentos.html">Equipamentos</a>
+                    <a class="btn btn-outline" href="relatorios.html">Indicadores</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Gestão do desktop</h3>
+                <div class="actions-row">
+                    <a class="btn btn-outline" href="categorias.html">Categorias</a>
+                    <a class="btn btn-outline" href="unidades.html">Unidades</a>
+                    <a class="btn btn-outline" href="auditoria.html">Auditoria</a>
+                    <a class="btn btn-outline" href="criar-usuario.html">Novo usuário</a>
+                    <a class="btn btn-outline" href="criar-unidade.html">Nova unidade</a>
+                    <a class="btn btn-outline" href="gerenciar-chamado.html">Gerenciar chamado</a>
+                </div>
+            </div>
+        </section>
+        <section class="card">
+            <h3>Chamados recentes</h3>
+            <div class="table-wrap">
+                <table class="tabela">
+                    <thead><tr><th>#</th><th>Titulo</th><th>Status</th><th>Solicitante</th></tr></thead>
+                    <tbody id="adminRecentes"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "keyboard": [
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "text": "Tema"
+    },
+    {
+      "tag": "INPUT",
+      "id": "email",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "id": "senha",
+      "text": ""
+    },
+    {
+      "tag": "SELECT",
+      "id": "perfil",
+      "text": "Selecione seu perfil\nInstrutor\nSupo"
+    },
+    {
+      "tag": "SELECT",
+      "id": "unidade",
+      "text": "Selecione a unidade\nTaguatinga\nBras"
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "text": "Entrar"
+    },
+    {
+      "tag": "BODY",
+      "id": "",
+      "text": "CT\nConectaTI Senac\n\nFaça login para"
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "text": "Tema"
+    },
+    {
+      "tag": "INPUT",
+      "id": "email",
+      "text": ""
+    },
+    {
+      "tag": "INPUT",
+      "id": "senha",
+      "text": ""
+    },
+    {
+      "tag": "SELECT",
+      "id": "perfil",
+      "text": "Selecione seu perfil\nInstrutor\nSupo"
+    },
+    {
+      "tag": "SELECT",
+      "id": "unidade",
+      "text": "Selecione a unidade\nTaguatinga\nBras"
+    }
+  ],
+  "navigation": {
+    "linkCount": 1,
+    "destination": "/chamados.html",
+    "status": "ConectaTI"
+  }
+}
