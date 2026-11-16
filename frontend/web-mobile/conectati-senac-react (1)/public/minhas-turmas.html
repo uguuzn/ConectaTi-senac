@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConectaTI Senac — Minhas turmas</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app">
+ <aside class="sidebar" id="sidebar">
+  <div class="brand">
+   <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+   <span class="brand-name">Conecta<b>TI</b></span>
+  </div>
+  <nav>
+   <a href="home.html">Início</a>
+   <a href="dashboard.html">Dashboard</a>
+   <a href="minhas-turmas.html" class="active">Minhas turmas</a>
+   <a href="mapa-salas.html">Mapa de salas</a>
+   <a href="chamados.html">Chamados</a>
+   <a href="novo-chamado.html">Novo chamado</a>
+   <a href="equipamentos.html">Equipamentos</a>
+   <a href="usuarios.html">Usuários</a>
+   <a href="unidades.html">Unidades</a>
+   <a href="relatorios.html">Relatórios</a>
+   <a href="login.html" class="logout">Sair</a>
+  </nav>
+ </aside>
+
+ <main class="content">
+  <header class="topbar">
+   <button class="menu-toggle" id="menu-toggle">Menu</button>
+   <div>
+    <h1>Minhas turmas</h1>
+    <p class="muted">Visualize suas turmas e solicite uma sala para a aula.</p>
+   </div>
+  </header>
+
+  <section class="cards-grid" id="turmas-grid"></section>
+
+  <section class="card reveal" style="margin-top:24px">
+   <h3>Minhas solicitações de sala</h3>
+   <div class="table-wrap">
+    <table class="tabela" id="tabela-solicitacoes">
+     <thead>
+      <tr><th>Nº</th><th>Turma</th><th>Sala preferida</th><th>Data</th><th>Horário</th><th>Status</th><th>Sala atribuída</th></tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </div>
+   <p id="sem-solic" class="muted center hidden">Você ainda não fez solicitações.</p>
+  </section>
+ </main>
+
+ <!-- Modal solicitar sala -->
+ <div id="modal-solicitar" class="modal hidden">
+  <div class="modal-card reveal">
+   <h3 id="modal-titulo">Solicitar sala</h3>
+   <form id="form-solicitar" class="form">
+    <label>Data <input type="date" id="s-data" required /></label>
+    <label>Horário <input type="time" id="s-hora" required /></label>
+    <label>Sala preferida
+     <select id="s-sala"></select>
+    </label>
+    <label>Observação
+     <textarea id="s-obs" rows="3" placeholder="Ex.: preciso de projetor..."></textarea>
+    </label>
+    <div class="modal-actions">
+     <button type="button" class="btn btn-ghost" id="s-cancelar">Cancelar</button>
+     <button type="submit" class="btn btn-primary">Enviar solicitação</button>
+    </div>
+   </form>
+  </div>
+ </div>
+
+ <script src="js/script.js"></script>
+</body>
+</html>

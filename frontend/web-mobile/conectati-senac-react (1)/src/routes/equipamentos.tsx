@@ -1,0 +1,7 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { AppShell } from "@/components/conectati/AppLayout";
+import { equipamentosService, type Equipamento } from "@/services/conectati";
+import { slug } from "@/lib/conectati/store";
+export const Route = createFileRoute("/equipamentos")({ component: () => <AppShell active="equipamentos"><Equipamentos /></AppShell> });
+function Equipamentos() { const [items, setItems] = useState<Equipamento[]>([]); const [erro, setErro] = useState(""); useEffect(() => { equipamentosService.listar().then(setItems).catch(error => setErro(error.message)); }, []); return <main className="content"><header className="topbar"><div><h1>Equipamentos</h1><p className="muted">Disponibilidade consultada em tempo real.</p></div></header>{erro && <p className="alerta erro">{erro}</p>}<section className="cards-grid equip-grid">{items.map((item, index) => <div key={item.id} className={`equip-card ${slug(item.status)} reveal visible`} style={{ animationDelay: `${index * 40}ms` }}><h4>{item.nome}</h4><p className="tipo">{item.tipo || "—"}</p><p className="patr">Patrimônio {item.patrimonio}</p><span className={`status ${slug(item.status)}`}>{item.status}</span><p className="loc">{item.salaNome || "Sem sala"}</p></div>)}</section>{!erro && !items.length && <p className="muted center">Nenhum equipamento cadastrado.</p>}</main>; }
