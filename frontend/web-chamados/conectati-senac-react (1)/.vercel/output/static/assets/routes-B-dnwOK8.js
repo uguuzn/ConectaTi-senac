@@ -1,0 +1,1 @@
+import{a as e,i as t,n}from"./index-Dlt1fK-b.js";var r=e(t());function i(){let e=n();return(0,r.useEffect)(()=>{e({to:`/home`,replace:!0})},[e]),null}export{i as component};
