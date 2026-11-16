@@ -1,0 +1,5 @@
+node_modules/
+data/
+public/
+mobile/.expo-export/
+.env
