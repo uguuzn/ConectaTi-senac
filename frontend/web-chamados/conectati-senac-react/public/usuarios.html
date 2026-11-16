@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConectaTI Senac — Usuários</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app">
+ <aside class="sidebar" id="sidebar">
+  <div class="brand">
+   <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+   <span class="brand-name">Conecta<b>TI</b></span>
+  </div>
+  <nav>
+   <a href="home.html">Início</a>
+   <a href="dashboard.html">Dashboard</a>
+   <a href="minhas-turmas.html">Minhas turmas</a>
+   <a href="mapa-salas.html">Mapa de salas</a>
+   <a href="chamados.html">Chamados</a>
+   <a href="novo-chamado.html">Novo chamado</a>
+   <a href="equipamentos.html">Equipamentos</a>
+   <a href="usuarios.html" class="active">Usuários</a>
+   <a href="unidades.html">Unidades</a>
+   <a href="relatorios.html">Relatórios</a>
+   <a href="login.html" class="logout">Sair</a>
+  </nav>
+ </aside>
+
+ <main class="content">
+  <header class="topbar">
+   <button class="menu-toggle" id="menu-toggle">Menu</button>
+   <div>
+    <h1>Gestão de usuários</h1>
+    <p class="muted">Cadastre, edite e remova usuários do sistema.</p>
+   </div>
+   <button class="btn btn-primary" id="btn-novo-usuario">+ Novo usuário</button>
+  </header>
+
+  <section class="card reveal">
+   <div class="table-wrap">
+    <table class="tabela" id="tabela-usuarios">
+     <thead>
+      <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Unidade</th><th>Ações</th></tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </div>
+  </section>
+ </main>
+
+ <div id="modal-usuario" class="modal hidden">
+  <div class="modal-card reveal">
+   <h3 id="mu-titulo">Novo usuário</h3>
+   <form id="form-usuario" class="form">
+    <input type="hidden" id="u-id" />
+    <label>Nome <input type="text" id="u-nome" required /></label>
+    <label>E-mail <input type="email" id="u-email" required /></label>
+    <label>Perfil
+     <select id="u-perfil">
+      <option>Instrutor</option>
+      
+      <option>Suporte TI</option>
+      <option>Coordenação</option>
+      <option>Administrador</option>
+     </select>
+    </label>
+    <label>Unidade <select id="u-unidade"></select></label>
+    <div class="modal-actions">
+     <button type="button" class="btn btn-ghost" id="u-cancelar">Cancelar</button>
+     <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+   </form>
+  </div>
+ </div>
+
+ <script src="js/script.js"></script>
+</body>
+</html>

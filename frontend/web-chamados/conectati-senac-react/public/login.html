@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConectaTI Senac — Login</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth">
+ <div class="bg-orbs">
+ <span class="orb orb-1"></span>
+ <span class="orb orb-2"></span>
+ <span class="orb orb-3"></span>
+ </div>
+
+ <div class="auth-card reveal">
+ <div class="brand center">
+ <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+ <span class="brand-name">ConectaTI <b>Senac</b></span>
+ </div>
+ <h2>Acesse sua conta</h2>
+ <p class="muted">Selecione seu perfil e entre no sistema.</p>
+
+ <form id="form-login" class="form" novalidate>
+ <label>Perfil de acesso
+ <select id="perfil">
+ <option value="">Selecione um perfil</option>
+ <option value="Instrutor">Instrutor</option>
+ <option value="Suporte TI">Suporte TI</option>
+ 
+ <option value="Coordenação">Coordenação</option>
+ <option value="Administrador">Administrador</option>
+ </select>
+ </label>
+ <label>Unidade Senac
+ <select id="unidade">
+ <option value="">Selecione a unidade</option>
+ <option>Senac Taguatinga Sul - Taguatinga/DF</option>
+ <option>Senac Taguatinga Norte - Taguatinga/DF</option>
+ <option>Senac Plano Piloto - Brasília/DF</option>
+ <option>Senac Ceilândia - Ceilândia/DF</option>
+ <option>Senac Gama - Gama/DF</option>
+ <option>Senac Sobradinho - Sobradinho/DF</option>
+ <option>Senac Planaltina - Planaltina/DF</option>
+ <option>Senac Guará - Guará/DF</option>
+ <option>Senac Samambaia - Samambaia/DF</option>
+ <option>Senac São Sebastião - São Sebastião/DF</option>
+ <option>Senac Recanto das Emas - Recanto das Emas/DF</option>
+ <option>Senac 903 Sul - Brasília/DF</option>
+ </select>
+ </label>
+ <label>E-mail
+ <input type="email" id="email" placeholder="seu@senacdf.com.br" />
+ </label>
+ <label>Senha
+ <input type="password" id="senha" placeholder="••••••••" />
+ </label>
+ <div id="alerta-login" class="alerta hidden"></div>
+ <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+ <a href="home.html" class="link center">Voltar para o início</a>
+ </form>
+ </div>
+
+ <script src="js/script.js"></script>
+</body>
+</html>
