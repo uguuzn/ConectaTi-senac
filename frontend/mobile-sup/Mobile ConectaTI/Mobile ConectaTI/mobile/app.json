@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "ConectaTI Senac DF",
+    "slug": "conectati-senac-df",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "br.senacdf.conectati",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "br.senacdf.conectati",
+      "adaptiveIcon": {
+        "backgroundColor": "#004587",
+        "foregroundImage": "./assets/icon.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "conectati",
+    "plugins": [
+      "expo-secure-store",
+      "expo-router",
+      "expo-status-bar",
+      "expo-sharing"
+    ]
+  }
+}

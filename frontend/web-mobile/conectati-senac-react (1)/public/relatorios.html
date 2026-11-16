@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConectaTI Senac — Relatórios</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app">
+ <aside class="sidebar" id="sidebar">
+ <div class="brand">
+ <img src="assets/logo-senac.png" alt="Logo Senac" class="logo" />
+ <span class="brand-name">Conecta<b>TI</b></span>
+ </div>
+ <nav>
+ <a href="home.html">Início</a>
+ <a href="dashboard.html">Dashboard</a>
+ <a href="chamados.html">Chamados</a>
+ <a href="novo-chamado.html">Novo chamado</a>
+ <a href="equipamentos.html">Equipamentos</a>
+ <a href="relatorios.html" class="active">Relatórios</a>
+ <a href="minhas-turmas.html">Minhas turmas</a>
+ <a href="mapa-salas.html">Mapa de salas</a>
+ <a href="usuarios.html">Usuários</a>
+ <a href="unidades.html">Unidades</a>
+ <a href="login.html" class="logout">Sair</a>
+ </nav>
+ </aside>
+
+ <main class="content">
+ <header class="topbar">
+ <button class="menu-toggle" id="menu-toggle"></button>
+ <div>
+ <h1>Relatórios</h1>
+ <p class="muted">Indicadores e exportações da unidade.</p>
+ </div>
+ <div class="actions-row">
+ <button class="btn btn-outline" onclick="acaoRelatorio('Filtrar por mês')">Filtrar por mês</button>
+ <button class="btn btn-outline" onclick="acaoRelatorio('Filtrar por categoria')">Filtrar por categoria</button>
+ <button class="btn btn-primary" onclick="acaoRelatorio('Gerar relatório')">Gerar relatório</button>
+ <button class="btn btn-ghost" onclick="acaoRelatorio('Exportar PDF')">Exportar PDF</button>
+ </div>
+ </header>
+
+ <section class="cards-grid">
+ <div class="card kpi reveal"><span class="kpi-icon" style="background:var(--grad-blue)"></span><div><b data-count="128">0</b><small>Chamados no mês</small></div></div>
+ <div class="card kpi reveal"><span class="kpi-icon" style="background:var(--grad-green)"></span><div><b data-count="96">0</b><small>Resolvidos</small></div></div>
+ <div class="card kpi reveal"><span class="kpi-icon" style="background:var(--grad-red)">⏳</span><div><b data-count="12">0</b><small>Pendentes</small></div></div>
+ <div class="card kpi reveal"><span class="kpi-icon" style="background:var(--grad-orange)"></span><div><b data-count="47">0</b><small>Reservas de notebooks</small></div></div>
+ </section>
+
+ <section class="charts">
+ <div class="card reveal">
+ <h3>Salas com mais problemas</h3>
+ <div class="bars">
+ <div class="bar-row"><span>Lab 02</span><div class="bar"><i style="--w:100%;background:var(--grad-red)"></i></div><b>22</b></div>
+ <div class="bar-row"><span>Lab 01</span><div class="bar"><i style="--w:82%;background:var(--grad-orange)"></i></div><b>18</b></div>
+ <div class="bar-row"><span>Sala 12</span><div class="bar"><i style="--w:60%;background:var(--grad-yellow)"></i></div><b>13</b></div>
+ <div class="bar-row"><span>Secretaria</span><div class="bar"><i style="--w:35%;background:var(--grad-blue)"></i></div><b>8</b></div>
+ <div class="bar-row"><span>Sala TI</span><div class="bar"><i style="--w:22%;background:var(--grad-teal)"></i></div><b>5</b></div>
+ </div>
+ </div>
+ <div class="card reveal">
+ <h3>Equipamentos mais solicitados</h3>
+ <div class="bars">
+ <div class="bar-row"><span>Notebook</span><div class="bar"><i style="--w:100%;background:var(--grad-purple)"></i></div><b>34</b></div>
+ <div class="bar-row"><span>Projetor</span><div class="bar"><i style="--w:70%;background:var(--grad-pink)"></i></div><b>24</b></div>
+ <div class="bar-row"><span>Cabo HDMI</span><div class="bar"><i style="--w:50%;background:var(--grad-blue)"></i></div><b>17</b></div>
+ <div class="bar-row"><span>Mouse</span><div class="bar"><i style="--w:30%;background:var(--grad-green)"></i></div><b>10</b></div>
+ </div>
+ </div>
+ </section>
+ <div id="toast" class="toast hidden"></div>
+ </main>
+
+ <script src="js/script.js"></script>
+</body>
+</html>
