@@ -2,8 +2,12 @@ package br.com.senac.conectati.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
+import jakarta.annotation.PostConstruct;
 
 /**
  * Configuração global de CORS.
@@ -11,6 +15,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class CorsConfig {
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+
+    @PostConstruct
+    void validarOrigens() {
+        if (allowedOrigins == null || allowedOrigins.isBlank()
+                || Arrays.stream(allowedOrigins.split(",")).map(String::trim)
+                        .anyMatch(origin -> origin.isEmpty() || origin.contains("*"))) {
+            throw new IllegalStateException("APP_CORS_ALLOWED_ORIGINS deve conter origens explícitas, sem curinga.");
+        }
+    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -20,15 +36,10 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOriginPatterns(
-                                "http://localhost:3000",
-                                "http://127.0.0.1:3000",
-                                "http://localhost:5500",
-                                "http://127.0.0.1:5500",
-                                "http://localhost:5173",
-                                "http://127.0.0.1:5173",
-                                "https://*.vercel.app"
-                        )
+                        .allowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                                .map(String::trim)
+                                .filter(origin -> !origin.isEmpty())
+                                .toArray(String[]::new))
                         .allowedMethods(
                                 "GET",
                                 "POST",

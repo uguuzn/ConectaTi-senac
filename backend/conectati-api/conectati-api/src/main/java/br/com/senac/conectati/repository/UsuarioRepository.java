@@ -17,6 +17,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findByTipo(TipoUsuario tipo);
 
+    long countByTipo(TipoUsuario tipo);
+
     List<Usuario> findByNomeContainingIgnoreCase(String nome);
 
 }

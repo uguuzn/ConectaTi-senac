@@ -52,14 +52,21 @@ public class ChamadoService {
         chamado.setStatus(StatusChamado.ABERTO);
         chamado.setSolicitante(usuario);
         chamado.setTecnicoResponsavel(null);
+        validarReferenciasInformadas(request);
         preencherRelacionamentosEditaveis(chamado, request);
         return ChamadoMapper.toResponse(repository.save(chamado));
     }
 
     public List<ChamadoResponse> listar() {
         Usuario usuario = autenticadoService.atual();
-        return repository.findAll().stream()
-                .filter(chamado -> podeVisualizar(usuario, chamado))
+        // Consulta já filtrada no banco (com fetch join via @EntityGraph),
+        // evitando carregar todos os chamados e acessar relações LAZY por linha.
+        List<Chamado> chamados = switch (usuario.getTipo()) {
+            case ADMINISTRADOR -> repository.findAllComRelacionamentos();
+            case TECNICO -> repository.listarFilaDoTecnico(usuario.getId());
+            case INSTRUTOR, COORDENADOR -> repository.listarPorSolicitante(usuario.getId());
+        };
+        return chamados.stream()
                 .map(ChamadoMapper::toResponse)
                 .toList();
     }
@@ -124,6 +131,9 @@ public class ChamadoService {
 
         StatusChamado novoStatus = request.getStatus();
         validarTransicao(chamado.getStatus(), novoStatus);
+        if (chamado.getStatus() == novoStatus) {
+            return ChamadoMapper.toResponse(chamado);
+        }
 
         if (novoStatus == StatusChamado.CONCLUIDO) {
             if (temTexto(request.getSolucao())) {
@@ -176,6 +186,24 @@ public class ChamadoService {
         chamado.setSala(request.getSalaId() == null ? null : obterSala(request.getSalaId()));
     }
 
+    /**
+     * CT07 — referências inválidas rejeitadas de forma controlada:
+     * se o cliente informar solicitanteId ou tecnicoResponsavelId, o
+     * identificador precisa existir (404 padronizado). O solicitante
+     * efetivo continua sendo o usuário autenticado e o técnico é definido
+     * apenas pelo fluxo de atendimento (PATCH /chamados/{id}/assumir).
+     */
+    private void validarReferenciasInformadas(ChamadoRequest request) {
+        if (request.getSolicitanteId() != null) {
+            usuarioRepository.findById(request.getSolicitanteId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Solicitante nao encontrado."));
+        }
+        if (request.getTecnicoResponsavelId() != null) {
+            usuarioRepository.findById(request.getTecnicoResponsavelId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tecnico responsavel nao encontrado."));
+        }
+    }
+
     private boolean podeVisualizar(Usuario usuario, Chamado chamado) {
         return switch (usuario.getTipo()) {
             case ADMINISTRADOR -> true;
@@ -207,11 +235,11 @@ public class ChamadoService {
     }
 
     private void validarTransicao(StatusChamado atual, StatusChamado novo) {
-        if (atual == novo) {
-            return;
-        }
         if (EnumSet.of(StatusChamado.CONCLUIDO, StatusChamado.CANCELADO).contains(atual)) {
             throw new BusinessException("Chamado encerrado nao permite alteracao de status.");
+        }
+        if (atual == novo) {
+            return;
         }
 
         boolean permitido = switch (atual) {

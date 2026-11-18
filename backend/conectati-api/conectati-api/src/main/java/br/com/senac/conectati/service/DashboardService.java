@@ -42,7 +42,8 @@ public class DashboardService {
             response.getChamadosPorStatus().put(status, chamadoRepository.countByStatus(status));
         }
         for (TipoUsuario tipo : TipoUsuario.values()) {
-            response.getUsuariosPorCargo().put(tipo, (long) usuarioRepository.findByTipo(tipo).size());
+            // Contagem no banco; antes carregava todos os usuários para somar em memória.
+            response.getUsuariosPorCargo().put(tipo, usuarioRepository.countByTipo(tipo));
         }
         response.setTotalEquipamentos(equipamentoRepository.count());
     }

@@ -9,7 +9,7 @@ COPY settings.gradle .
 COPY src src
 
 RUN chmod +x gradlew
-RUN ./gradlew clean build -x test
+RUN ./gradlew --no-daemon clean build
 
 FROM eclipse-temurin:17-jre
 
@@ -19,4 +19,4 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=production"]
