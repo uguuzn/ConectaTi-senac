@@ -1,0 +1,27 @@
+{
+  "name": "conectati-senac-df",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Helpdesk móvel ConectaTI para operação em rede interna",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:css && node build.js",
+    "build:css": "tailwindcss -c tailwind.config.js -i styles/input.css -o public/styles.css --minify",
+    "start": "npm run build && node server.js",
+    "mobile": "npm --prefix mobile run start",
+    "android": "npm --prefix mobile run android",
+    "create-admin": "node create-admin.js",
+    "test": "npm run build && node --test"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/preset-react": "^7.27.1",
+    "tailwindcss": "^3.4.17"
+  }
+}
