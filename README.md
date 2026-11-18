@@ -45,7 +45,7 @@ As contas de demonstração são:
 O projeto tem três aplicativos separados:
 
 - **Web** — `frontend/web-chamados/conectati-senac-react`: para coordenação, instrutores e administração. É o frontend publicado pela Vercel.
-- **Mobile de suporte** — `frontend/mobile-sup/Mobile ConectaTI/Mobile ConectaTI/mobile`: aplicativo Expo independente para a equipe de suporte.
+- **Mobile de suporte** — `frontend/mobile-sup`: aplicativo Expo/React Native independente para a equipe de suporte.
 - **Desktop** — `frontend/desktop/ConectaTI Senac`: aplicativo Electron para administração.
 
 ### Web
@@ -61,7 +61,7 @@ O servidor local usa a porta `5173`.
 ### Mobile de suporte
 
 ```powershell
-cd "frontend/mobile-sup/Mobile ConectaTI/Mobile ConectaTI/mobile"
+cd frontend/mobile-sup
 npm.cmd install
 npm.cmd start
 ```
