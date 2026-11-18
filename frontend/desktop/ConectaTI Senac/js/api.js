@@ -39,10 +39,11 @@ const ConectaTIAPI = (() => {
     }
 
     return {
-        login: (email, senha) =>
+        login: (email, senha, signal) =>
             request('/auth/login', {
                 method: 'POST',
-                body: JSON.stringify({ email, senha })
+                body: JSON.stringify({ email, senha }),
+                signal
             }),
 
         listarUsuarios: () => request('/usuarios'),

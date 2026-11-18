@@ -3,10 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=auditoria.html">
-    <title>Configuracoes - ConectaTI Senac</title>
+    <meta name="theme-color" content="#0d4da2">
+    <title>Configurações - ConectaTI Senac</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
+        .menu-icon svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+        .sidebar-nav a.active .menu-icon svg { stroke:white; }
+        .sidebar-nav a:hover .menu-icon svg { stroke:var(--text-primary); }
+        .menu-divider { height:1px; background:var(--border-color); margin:8px 12px; }
+
+        .config-card {
+            background: var(--bg-card);
+            padding: 20px 24px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+            margin-bottom: 12px;
+        }
+        .config-card:hover { border-color: rgba(13, 77, 162, 0.2); }
+
+        .config-card .config-info h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+        .config-card .config-info p { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Toggle Switch */
+        .toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .toggle.active { background: var(--primary); }
+        .toggle .toggle-ball {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: var(--transition);
+        }
+        .toggle.active .toggle-ball { left: 23px; }
+
+        .config-select {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            min-width: 120px;
+            cursor: pointer;
+        }
+        .config-select:focus { border-color: var(--primary); outline: none; }
+
+        .config-input {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            width: 200px;
+        }
+        .config-input:focus { border-color: var(--primary); outline: none; }
+    </style>
 </head>
 <body>
-    <p>Redirecionando para <a href="auditoria.html">Auditoria</a>...</p>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <img class="logo" src="assets/logo-senac.png" alt="Logo Senac">
+            <h1>ConectaTI</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="nav-label">Menu Principal</p>
+            <a href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Dashboard</a>
+            <a href="novo-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span> Novo Chamado</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div>
+                    <div class="user-name" id="userName">Usuário</div>
+                    <div class="user-perfil" id="userPerfil">Perfil</div>
+                    <div class="user-perfil" id="userUnidade">Unidade</div>
+                </div>
+            </div>
+            <div class="sidebar-actions">
+                <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" style="width:100%; margin-bottom:8px;">Tema</button>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
+
+    <main class="main-content">
+        <header class="content-header">
+            <div class="page-title">
+                <h1>⚙️ Configurações</h1>
+                <p>Configure as preferências do sistema</p>
+            </div>
+            <div class="header-actions">
+                <span class="date-display" id="dataAtual"></span>
+                <button class="btn btn-primary btn-sm" onclick="mostrarNotificacao('Configurações salvas com sucesso!', 'success')">💾 Salvar Configurações</button>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
+            </div>
+        </header>
+
+        <div style="padding: 16px 24px;">
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>🌓 Tema Escuro</h3>
+                    <p>Ative o tema escuro para o sistema</p>
+                </div>
+                <div class="toggle" id="toggleTema" onclick="toggleTemaConfig()">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>🔔 Notificações</h3>
+                    <p>Receber notificações de novos chamados</p>
+                </div>
+                <div class="toggle active" id="toggleNotificacoes" onclick="toggleNotificacoesConfig()">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>📧 Notificações por E-mail</h3>
+                    <p>Receber notificações por e-mail</p>
+                </div>
+                <div class="toggle" id="toggleEmail" onclick="toggleEmailConfig()">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>🏷️ Idioma</h3>
+                    <p>Selecione o idioma do sistema</p>
+                </div>
+                <select class="config-select" id="selectIdioma" onchange="mudarIdioma()">
+                    <option value="pt-BR">🇧🇷 Português (BR)</option>
+                    <option value="en-US">🇺🇸 English (US)</option>
+                    <option value="es-ES">🇪🇸 Español</option>
+                </select>
+            </div>
+
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>📅 Formato de Data</h3>
+                    <p>Selecione o formato de data preferido</p>
+                </div>
+                <select class="config-select" id="selectData" onchange="mudarFormatoData()">
+                    <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                    <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                    <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                </select>
+            </div>
+
+            <div class="config-card">
+                <div class="config-info">
+                    <h3>⏱️ Timeout de Sessão (minutos)</h3>
+                    <p>Tempo de inatividade antes do logout automático</p>
+                </div>
+                <input type="number" class="config-input" id="inputTimeout" value="30" min="5" max="120" onchange="alterarTimeout()">
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Toggles
+        function toggleTemaConfig() {
+            const el = document.getElementById('toggleTema');
+            const ligado = !el.classList.contains('active'); // novo estado do interruptor
+            definirTema(ligado ? 'dark' : 'light');          // ligado = tema escuro
+            el.classList.toggle('active', ligado);
+            mostrarNotificacao(ligado ? 'Tema escuro ativado!' : 'Tema claro ativado!', 'info');
+        }
+
+        // Sincroniza o interruptor com o tema realmente carregado
+        // (roda após o loadTheme() do script.js, que define o tema padrão)
+        document.addEventListener('DOMContentLoaded', function () {
+            const temaAtual = document.documentElement.getAttribute('data-theme') || 'dark';
+            const el = document.getElementById('toggleTema');
+            if (el) el.classList.toggle('active', temaAtual === 'dark');
+            // Pré-seleciona o idioma salvo
+            const selIdioma = document.getElementById('selectIdioma');
+            if (selIdioma) selIdioma.value = getIdioma();
+        });
+
+        function toggleNotificacoesConfig() {
+            const el = document.getElementById('toggleNotificacoes');
+            el.classList.toggle('active');
+            mostrarNotificacao(el.classList.contains('active') ? 'Notificações ativadas!' : 'Notificações desativadas!', 'info');
+        }
+
+        function toggleEmailConfig() {
+            const el = document.getElementById('toggleEmail');
+            el.classList.toggle('active');
+            mostrarNotificacao(el.classList.contains('active') ? 'Notificações por e-mail ativadas!' : 'Notificações por e-mail desativadas!', 'info');
+        }
+
+        function mudarIdioma() {
+            const val = document.getElementById('selectIdioma').value;
+            // Troca REAL de idioma: salva a escolha e aplica em toda a interface
+            mudarIdiomaSistema(val);
+            const msgs = {
+                'pt-BR': 'Idioma alterado para Português (BR)!',
+                'en-US': 'Language switched to English (US)!',
+                'es-ES': '¡Idioma cambiado a Español!'
+            };
+            mostrarNotificacao(msgs[val] || msgs['pt-BR'], 'success');
+        }
+
+        function mudarFormatoData() {
+            const val = document.getElementById('selectData').value;
+            mostrarNotificacao(`Formato de data alterado para ${val}`, 'success');
+        }
+
+        function alterarTimeout() {
+            const val = document.getElementById('inputTimeout').value;
+            if (val >= 5 && val <= 120) {
+                mostrarNotificacao(`Timeout de sessão alterado para ${val} minutos`, 'success');
+            } else {
+                mostrarNotificacao('Valor inválido. Use entre 5 e 120 minutos.', 'error');
+            }
+        }
+    </script>
 </body>
 </html>

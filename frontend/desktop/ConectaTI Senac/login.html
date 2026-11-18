@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="theme-color" content="#0d4da2">
     <title>Login - ConectaTI Senac</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
 </head>
 <body class="login-page">
     <div class="login-container">
-        <div class="login-logo">CT</div>
+        <img class="login-logo" src="assets/logo-senac.png" alt="Logo Senac">
         <h1>ConectaTI Senac</h1>
         <p class="subtitle">Faça login para continuar</p>
         
@@ -32,39 +33,12 @@
             
             <div class="form-group">
                 <label for="perfil">Perfil</label>
-                <select id="perfil">
+                <select id="perfil" required>
                     <option value="">Selecione seu perfil</option>
                     <option value="Instrutor">Instrutor</option>
                     <option value="Suporte TI">Suporte TI</option>
                     <option value="Coordenacao">Coordenação</option>
                     <option value="Administrador">Administrador</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="unidade">Unidade Senac</label>
-                <select id="unidade">
-                    <option value="">Selecione a unidade</option>
-                    <option value="Taguatinga">Taguatinga</option>
-                    <option value="Brasília">Brasília</option>
-                    <option value="Ceilândia">Ceilândia</option>
-                    <option value="Gama">Gama</option>
-                    <option value="Guará">Guará</option>
-                    <option value="Planaltina">Planaltina</option>
-                    <option value="Recanto das Emas">Recanto das Emas</option>
-                    <option value="Samambaia">Samambaia</option>
-                    <option value="Santa Maria">Santa Maria</option>
-                    <option value="São Sebastião">São Sebastião</option>
-                    <option value="Sobradinho">Sobradinho</option>
-                    <option value="Vicente Pires">Vicente Pires</option>
-                    <option value="Águas Claras">Águas Claras</option>
-                    <option value="Asa Norte">Asa Norte</option>
-                    <option value="Asa Sul">Asa Sul</option>
-                    <option value="Lago Norte">Lago Norte</option>
-                    <option value="Lago Sul">Lago Sul</option>
-                    <option value="Núcleo Bandeirante">Núcleo Bandeirante</option>
-                    <option value="Park Way">Park Way</option>
-                    <option value="Riacho Fundo">Riacho Fundo</option>
                 </select>
             </div>
             

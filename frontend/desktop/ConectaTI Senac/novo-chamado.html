@@ -2,35 +2,112 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d4da2">
     <title>Novo Chamado - ConectaTI Senac</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
+        .menu-icon svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+        .sidebar-nav a.active .menu-icon svg { stroke:white; }
+        .sidebar-nav a:hover .menu-icon svg { stroke:var(--text-primary); }
+
+        .novo-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            padding: 0 24px 24px;
+            align-items: start;
+        }
+        @media (max-width: 980px) { .novo-wrapper { grid-template-columns: 1fr; } }
+
+        .form-container { padding: 24px; }
+        .form-header { margin-bottom: 18px; }
+        .form-header h1 { font-size: 1.3rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 16px;
+        }
+        .form-grid .full { grid-column: 1 / -1; }
+        @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .form-group label { display:flex; align-items:center; gap:6px; }
+        .form-group .hint { font-size:0.65rem; color:var(--text-muted); font-weight:400; }
+        .form-group input[readonly], .form-group select[disabled] {
+            background: var(--bg-secondary); opacity: 0.85; cursor: not-allowed;
+        }
+        .form-group textarea { resize: vertical; min-height: 110px; }
+        .form-group select,
+        .form-group input,
+        .form-group textarea { width:100%; }
+
+        .prioridade-cores span { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; }
+
+        /* Prévia */
+        .preview-card {
+            position: sticky;
+            top: 80px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .preview-card h3 {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.4px;
+            color: var(--text-muted); margin-bottom: 12px;
+        }
+        .preview-num {
+            font-size: 1.4rem; font-weight: 800; color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .preview-linha {
+            display: flex; justify-content: space-between; gap: 10px;
+            padding: 7px 0; border-bottom: 1px dashed var(--border-color);
+            font-size: 0.8rem;
+        }
+        .preview-linha:last-of-type { border-bottom: none; }
+        .preview-linha .k { color: var(--text-muted); }
+        .preview-linha .v { color: var(--text-primary); font-weight: 600; text-align: right; }
+        .preview-desc {
+            margin-top: 10px; font-size: 0.78rem; color: var(--text-secondary);
+            background: var(--bg-input); border-radius: var(--border-radius-sm);
+            padding: 10px; min-height: 48px; line-height: 1.45;
+        }
+        .badge-prev {
+            display:inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 0.62rem; font-weight: 700;
+        }
+        .b-baixa { background: rgba(107,203,119,0.15); color:#6BCB77; }
+        .b-media { background: rgba(77,150,255,0.15); color:#4D96FF; }
+        .b-alta  { background: rgba(255,179,71,0.15); color:#FFB347; }
+        .b-urgente { background: rgba(255,71,87,0.15); color:#FF4757; }
+
+        .form-actions { display:flex; gap:10px; margin-top: 18px; }
+        .sla-aviso {
+            margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);
+            background: var(--bg-input); border-left: 3px solid var(--primary);
+            padding: 8px 12px; border-radius: var(--border-radius-sm);
+        }
+    </style>
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="40" height="40" rx="10" fill="url(#grad1)"/>
-                    <text x="20" y="27" font-family="Arial, sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">CT</text>
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
+            <img class="logo" src="assets/logo-senac.png" alt="Logo Senac">
             <h1>ConectaTI</h1>
         </div>
         <nav class="sidebar-nav">
-            <p class="nav-label">Menu</p>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="chamados.html">Chamados</a>
-            <a href="novo-chamado.html" class="active">Novo Chamado</a>
-            <a href="equipamentos.html">Equipamentos</a>
-            <a href="relatorios.html">Relatórios</a>
+            <p class="nav-label">Menu Principal</p>
+            <a href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Dashboard</a>
+            <a href="novo-chamado.html" class="active"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span> Novo Chamado</a>
+            <a href="acompanhar-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Acompanhar</a>
+            <a href="chat.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Chat</a>
+            <a href="duvidas-frequentes.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Dúvidas Frequentes</a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
@@ -38,10 +115,12 @@
                 <div>
                     <div class="user-name" id="userName">Usuário</div>
                     <div class="user-perfil" id="userPerfil">Perfil</div>
+                    <div class="user-perfil" id="userUnidade">Unidade</div>
                 </div>
             </div>
-            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-                <a href="index.html" onclick="localStorage.clear(); mostrarNotificacao('Saindo do sistema...', 'info');" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
+            <div class="sidebar-actions">
+                <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" style="width:100%; margin-bottom:8px;">Tema</button>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
             </div>
         </div>
     </aside>
@@ -51,99 +130,225 @@
     <main class="main-content">
         <header class="content-header">
             <div class="page-title">
-                <h1>Novo Chamado</h1>
-                <p>Abra uma nova solicitação</p>
+                <h1>📝 Abrir Chamado</h1>
+                <p>Registre uma nova solicitação para o Suporte TI</p>
             </div>
             <div class="header-actions">
                 <span class="date-display" id="dataAtual"></span>
                 <button class="menu-toggle" onclick="toggleSidebar()">Menu</button>
-                <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" title="Alternar tema">Tema</button>
-                <a href="index.html" onclick="localStorage.clear(); mostrarNotificacao('Saindo do sistema...', 'info');" class="btn btn-danger btn-sm">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
             </div>
         </header>
 
-        <div class="form-container">
-            <div class="form-header">
-                <div class="logo">N</div>
-                <h1>Nova Solicitação</h1>
+        <div class="novo-wrapper">
+            <!-- Formulário -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h1>Nova Solicitação</h1>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Preencha os campos abaixo. Os campos com <strong style="color:var(--danger)">*</strong> são obrigatórios.</p>
+                </div>
+
+                <form id="formChamado" onsubmit="return enviarChamado()">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="solicitante">Solicitante <span class="hint">(você)</span></label>
+                            <input type="text" id="solicitante" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfilChamado">Perfil</label>
+                            <select id="perfilChamado" disabled>
+                                <option value="Instrutor">Instrutor</option>
+                                <option value="Suporte TI">Suporte TI</option>
+                                <option value="Coordenacao">Coordenação</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="grupoTurma">
+                            <label for="turma">Turma <span class="hint">(se for instrutor)</span></label>
+                            <input type="text" id="turma" placeholder="Ex: TADS 2026.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="sala">Sala / Laboratório <span style="color:var(--danger)">*</span></label>
+                            <input type="text" id="sala" placeholder="Ex: Lab 01, Sala 12" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horario">Horário da Solicitação <span style="color:var(--danger)">*</span></label>
+                            <input type="time" id="horario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoria <span style="color:var(--danger)">*</span></label>
+                            <select id="categoria" required>
+                                <option value="Reserva de Notebooks">Reserva de Notebooks</option>
+                                <option value="Problema com Internet">Problema com Internet</option>
+                                <option value="Projetor">Projetor</option>
+                                <option value="Computador com Defeito">Computador com Defeito</option>
+                                <option value="Instalação de Software">Instalação de Software</option>
+                                <option value="Impressora">Impressora</option>
+                                <option value="Cabo HDMI">Cabo HDMI ou Adaptador</option>
+                                <option value="Mouse">Mouse</option>
+                                <option value="Teclado">Teclado</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prioridade">Prioridade <span style="color:var(--danger)">*</span></label>
+                            <select id="prioridade" required onchange="atualizarPreview()">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="descricao">Descrição do Problema <span style="color:var(--danger)">*</span></label>
+                            <textarea id="descricao" rows="4" placeholder="Descreva detalhadamente: o que está acontecendo, desde quando, e o que você já tentou. Quanto mais detalhe, mais rápido o atendimento." required oninput="atualizarPreview()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="sla-aviso">
+                        ⏱️ <strong>SLA por prioridade:</strong> Urgente até 1h · Alta até 4h · Média até 1 dia útil · Baixa até 2 dias úteis. A contagem inicia quando o chamado entra em atendimento.
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">Enviar Chamado</button>
+                        <a href="acompanhar-chamado.html" class="btn btn-outline">Cancelar</a>
+                    </div>
+                </form>
             </div>
 
-            <form id="formChamado" onsubmit="return enviarChamado()">
-                <div class="form-group">
-                    <label for="solicitante">Nome do Solicitante</label>
-                    <input type="text" id="solicitante" placeholder="Digite seu nome completo" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="perfilChamado">Perfil</label>
-                    <select id="perfilChamado" required>
-                        <option value="Instrutor">Instrutor</option>
-                        <option value="Suporte TI">Suporte TI</option>
-                        <option value="Coordenacao">Coordenação</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="grupoTurma" style="display:none;">
-                    <label for="turma">Turma (se for instrutor)</label>
-                    <input type="text" id="turma" placeholder="Ex: TADS 2024.1">
-                </div>
-
-                <div class="form-group">
-                    <label for="sala">Sala / Laboratório</label>
-                    <input type="text" id="sala" placeholder="Ex: Lab 01, Sala 12" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="horario">Horário da Solicitação</label>
-                    <input type="time" id="horario" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <select id="categoria" required>
-                        <option value="Reserva de notebooks">Reserva de Notebooks</option>
-                        <option value="Problema com Internet">Problema com Internet</option>
-                        <option value="Projetor">Projetor</option>
-                        <option value="Computador com defeito">Computador com Defeito</option>
-                        <option value="Instalação de Software">Instalação de Software</option>
-                        <option value="Impressora">Impressora</option>
-                        <option value="Cabo HDMI">Cabo HDMI ou Adaptador</option>
-                        <option value="Mouse">Mouse</option>
-                        <option value="Teclado">Teclado</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="prioridade">Prioridade</label>
-                    <select id="prioridade" required>
-                        <option value="Baixa">Baixa</option>
-                        <option value="Média">Média</option>
-                        <option value="Alta">Alta</option>
-                        <option value="Urgente">Urgente</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="descricao">Descrição do Problema</label>
-                    <textarea id="descricao" rows="4" placeholder="Descreva detalhadamente o problema..." required></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">Enviar Chamado</button>
-            </form>
+            <!-- Prévia ao vivo -->
+            <aside class="preview-card">
+                <h3>📋 Prévia do Chamado</h3>
+                <div class="preview-num" id="prevNum">#—</div>
+                <div class="preview-linha"><span class="k">Solicitante</span><span class="v" id="prevSol">—</span></div>
+                <div class="preview-linha"><span class="k">Perfil</span><span class="v" id="prevPer">—</span></div>
+                <div class="preview-linha"><span class="k">Sala/Lab</span><span class="v" id="prevSala">—</span></div>
+                <div class="preview-linha"><span class="k">Horário</span><span class="v" id="prevHora">—</span></div>
+                <div class="preview-linha"><span class="k">Categoria</span><span class="v" id="prevCat">—</span></div>
+                <div class="preview-linha"><span class="k">Prioridade</span><span class="v" id="prevPrio"><span class="badge-prev b-media">Média</span></span></div>
+                <div class="preview-desc" id="prevDesc">A descrição do problema aparece aqui conforme você digita...</div>
+            </aside>
         </div>
     </main>
 
-    <nav class="tab-bar">
-        <ul>
-            <li><a href="dashboard.html">Inicio</a></li>
-            <li><a href="chamados.html">Chamados</a></li>
-            <li><a href="novo-chamado.html" class="active">Novo</a></li>
-            <li><a href="equipamentos.html">Equip.</a></li>
-            <li><a href="index.html" onclick="localStorage.clear(); mostrarNotificacao('Saindo do sistema...', 'info');">Sair</a></li>
-        </ul>
-    </nav>
-
     <script src="js/script.js"></script>
+    <script>
+    // ============================================================
+    // NOVO CHAMADO — pré-preenche da sessão, valida, salva e redireciona
+    // ============================================================
+    function sessao() {
+        const s = JSON.parse(localStorage.getItem('sessaoConectaTI') || 'null');
+        const u = s?.usuario || {};
+        return {
+            nome: u.nome || u.email?.split('@')[0] || 'Usuário',
+            email: u.email || 'visitante@senac.com',
+            perfil: (typeof getPerfilUsuario === 'function') ? getPerfilUsuario() : 'Visitante',
+            unidade: (typeof getUnidadeUsuario === 'function') ? getUnidadeUsuario() : ''
+        };
+    }
+
+    function badgePrioridade(p) {
+        const cls = { 'Baixa':'b-baixa', 'Média':'b-media', 'Alta':'b-alta', 'Urgente':'b-urgente' };
+        return `<span class="badge-prev ${cls[p] || 'b-media'}">${p}</span>`;
+    }
+
+    function atualizarPreview() {
+        const val = (id) => (document.getElementById(id)?.value || '').trim() || '—';
+        document.getElementById('prevSol').textContent = val('solicitante');
+        document.getElementById('prevPer').textContent = val('perfilChamado');
+        document.getElementById('prevSala').textContent = val('sala');
+        document.getElementById('prevHora').textContent = val('horario') === '—' ? '—' : val('horario');
+        document.getElementById('prevCat').textContent = val('categoria');
+        document.getElementById('prevPrio').innerHTML = badgePrioridade(val('prioridade') === '—' ? 'Média' : val('prioridade'));
+        const desc = val('descricao');
+        document.getElementById('prevDesc').textContent = desc === '—' ? 'A descrição do problema aparece aqui conforme você digita...' : desc;
+    }
+
+    function proximoId() {
+        const lista = JSON.parse(localStorage.getItem('chamadosConectaTI') || '[]');
+        const maxId = lista.reduce((m, c) => Math.max(m, c.id || 0), 1000);
+        return maxId + 1;
+    }
+
+    function dataHoje() {
+        const d = new Date();
+        return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+    }
+
+    function enviarChamado() {
+        const me = sessao();
+        const sala = document.getElementById('sala').value.trim();
+        const horario = document.getElementById('horario').value;
+        const categoria = document.getElementById('categoria').value;
+        const prioridade = document.getElementById('prioridade').value;
+        const descricao = document.getElementById('descricao').value.trim();
+
+        if (!sala || !horario || !categoria || !prioridade || !descricao) {
+            mostrarNotificacao('Preencha todos os campos obrigatórios (*) antes de enviar.', 'error');
+            return false;
+        }
+        if (descricao.length < 10) {
+            mostrarNotificacao('Descreva o problema com mais detalhes (mínimo 10 caracteres).', 'error');
+            return false;
+        }
+
+        const id = proximoId();
+        const chamado = {
+            id,
+            solicitante: me.nome,
+            perfil: me.perfil,
+            turma: document.getElementById('turma').value.trim(),
+            sala,
+            horario,
+            categoria,
+            prioridade,
+            descricao,
+            status: 'Aberto',
+            data: dataHoje(),
+            abertoPor: me.email,
+            unidade: me.unidade
+        };
+
+        const lista = JSON.parse(localStorage.getItem('chamadosConectaTI') || '[]');
+        lista.unshift(chamado);
+        localStorage.setItem('chamadosConectaTI', JSON.stringify(lista));
+
+        mostrarNotificacao(`✅ Chamado #${String(id).padStart(3,'0')} aberto! Acompanhe em "Acompanhar Chamado".`, 'success');
+        setTimeout(() => { window.location.href = 'acompanhar-chamado.html'; }, 1300);
+        return false;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const me = sessao();
+        // Pré-preenche identidade
+        document.getElementById('solicitante').value = me.nome;
+        const sel = document.getElementById('perfilChamado');
+        sel.value = me.perfil;
+        // Turma só para instrutor
+        const grupoTurma = document.getElementById('grupoTurma');
+        grupoTurma.style.display = (me.perfil === 'Instrutor') ? '' : 'none';
+        // Sidebar user info
+        const ua = document.getElementById('userAvatar');
+        if (ua) ua.textContent = (me.nome.charAt(0) || 'U').toUpperCase();
+        const un = document.getElementById('userName'); if (un) un.textContent = me.nome;
+        const up = document.getElementById('userPerfil'); if (up) up.textContent = me.perfil;
+        const uu = document.getElementById('userUnidade'); if (uu) uu.textContent = me.unidade || '—';
+        // Horário padrão = agora
+        const agora = new Date();
+        document.getElementById('horario').value = String(agora.getHours()).padStart(2,'0') + ':' + String(agora.getMinutes()).padStart(2,'0');
+        // Prévia inicial + listeners
+        ['sala','horario','categoria','descricao'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', atualizarPreview);
+            if (el) el.addEventListener('change', atualizarPreview);
+        });
+        document.getElementById('prevNum').textContent = '#' + String(proximoId()).padStart(3,'0');
+        atualizarPreview();
+    });
+    </script>
 </body>
 </html>

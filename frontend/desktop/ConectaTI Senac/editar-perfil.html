@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d4da2">
+    <title>Editar Perfil - ConectaTI Senac</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
+        .menu-icon svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+        .sidebar-nav a.active .menu-icon svg { stroke:white; }
+        .sidebar-nav a:hover .menu-icon svg { stroke:var(--text-primary); }
+        .menu-divider { height:1px; background:var(--border-color); margin:8px 12px; }
+
+        .form-criar {
+            max-width: 640px;
+            margin: 16px 24px;
+            padding: 28px;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+        .form-criar .form-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+        .form-criar .form-header .icon {
+            width:44px; height:44px; border-radius:10px;
+            background: var(--primary-gradient);
+            display:flex; align-items:center; justify-content:center;
+            font-weight:800; color:white; flex-shrink:0; font-size:1.2rem;
+        }
+        .form-criar .form-header h1 { font-size:1.2rem; font-weight:700; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .campo-readonly { background:var(--bg-secondary); color:var(--text-muted); cursor:not-allowed; }
+        @media (max-width: 600px) { .form-row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
+
+    <main class="main-content">
+        <header class="content-header">
+            <div class="page-title">
+                <button class="menu-toggle" onclick="toggleSidebar()">Menu</button>
+                <h1>Editar Perfil</h1>
+                <p>Atualize seus dados pessoais e senha</p>
+            </div>
+            <div class="header-actions">
+                <span class="date-display" id="dataAtual"></span>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
+            </div>
+        </header>
+
+        <div class="form-criar">
+            <div class="form-header">
+                <div class="icon">👤</div>
+                <h1>Meus Dados</h1>
+            </div>
+
+            <form onsubmit="return salvarPerfil(event)">
+                <div class="form-group">
+                    <label for="nomePerfil">Nome Completo</label>
+                    <input type="text" id="nomePerfil" placeholder="Seu nome" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="emailPerfil">E-mail (login)</label>
+                        <input type="email" id="emailPerfil" class="campo-readonly" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfilPerfil">Perfil</label>
+                        <input type="text" id="perfilPerfil" class="campo-readonly" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="unidadePerfil">Unidade Senac</label>
+                    <select id="unidadePerfil">
+                        <option value="Taguatinga">Taguatinga</option>
+                        <option value="Brasília">Brasília</option>
+                        <option value="Ceilândia">Ceilândia</option>
+                        <option value="Gama">Gama</option>
+                        <option value="Guará">Guará</option>
+                        <option value="Planaltina">Planaltina</option>
+                        <option value="Samambaia">Samambaia</option>
+                        <option value="Águas Claras">Águas Claras</option>
+                        <option value="Asa Norte">Asa Norte</option>
+                        <option value="Asa Sul">Asa Sul</option>
+                    </select>
+                </div>
+
+                <div class="menu-divider" style="margin:20px 0;"></div>
+                <p class="nav-label" style="margin:0 0 12px;">Alterar senha (opcional)</p>
+
+                <div class="form-group">
+                    <label for="senhaAtual">Senha Atual</label>
+                    <input type="password" id="senhaAtual" placeholder="Deixe em branco se não for trocar" autocomplete="current-password">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="novaSenha">Nova Senha</label>
+                        <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmarSenha">Confirmar Nova Senha</label>
+                        <input type="password" id="confirmarSenha" placeholder="Repita a nova senha" autocomplete="new-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Salvar Alterações</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        function salvarPerfil(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nomePerfil').value.trim();
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmar = document.getElementById('confirmarSenha').value;
+            const unidade = document.getElementById('unidadePerfil').value;
+
+            const sessao = JSON.parse(localStorage.getItem('sessaoConectaTI') || 'null');
+            if (!sessao || !sessao.usuario) {
+                mostrarNotificacao('Sessão inválida. Faça login novamente.', 'error');
+                return false;
+            }
+            if (!nome) {
+                mostrarNotificacao('Informe seu nome.', 'error');
+                return false;
+            }
+            if (novaSenha || confirmar) {
+                if (!senhaAtual) {
+                    mostrarNotificacao('Digite a senha atual para trocar.', 'error');
+                    return false;
+                }
+                if (novaSenha !== confirmar) {
+                    mostrarNotificacao('As senhas não coincidem.', 'error');
+                    return false;
+                }
+                if (novaSenha.length < 6) {
+                    mostrarNotificacao('A nova senha deve ter ao menos 6 caracteres.', 'error');
+                    return false;
+                }
+            }
+
+            sessao.usuario.nome = nome;
+            localStorage.setItem('sessaoConectaTI', JSON.stringify(sessao));
+            localStorage.setItem('unidadeUsuario', unidade || '');
+
+            mostrarNotificacao('✅ Perfil atualizado com sucesso!', 'success');
+            if (typeof carregarPerfil === 'function') carregarPerfil();
+            if (typeof saudacaoDinamica === 'function') saudacaoDinamica();
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sessao = JSON.parse(localStorage.getItem('sessaoConectaTI') || 'null');
+            const u = (sessao && sessao.usuario) || {};
+            const perfisLabel = {
+                ADMINISTRADOR: 'Administrador', TECNICO: 'Suporte TI',
+                INSTRUTOR: 'Instrutor', COORDENADOR: 'Coordenação'
+            };
+            document.getElementById('nomePerfil').value =
+                u.nome || (u.email ? u.email.split('@')[0] : '');
+            document.getElementById('emailPerfil').value = u.email || '';
+            document.getElementById('perfilPerfil').value = perfisLabel[u.tipo] || u.tipo || '';
+            const unidade = localStorage.getItem('unidadeUsuario') || 'Taguatinga';
+            document.getElementById('unidadePerfil').value = unidade;
+        });
+    </script>
+</body>
+</html>

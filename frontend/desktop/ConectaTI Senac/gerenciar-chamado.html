@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="theme-color" content="#0d4da2">
     <title>Gerenciar Chamados - ConectaTI Senac</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
@@ -30,6 +31,8 @@
         .btn-gerenciar.cancelar { background: var(--danger); color: white; }
         .btn-gerenciar.atender { background: var(--primary); color: white; }
         .btn-gerenciar.visualizar { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-gerenciar.fechar { background: var(--text-muted); color: white; }
+        .btn-gerenciar.reabrir { background: var(--warning); color: white; }
         
         .chamado-row-actions {
             display: flex;
@@ -41,15 +44,13 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#grad)"/><text x="20" y="27" font-family="Arial" font-size="16" font-weight="800" fill="white" text-anchor="middle">CT</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs></svg></div>
+            <img class="logo" src="assets/logo-senac.png" alt="Logo Senac">
             <h1>ConectaTI</h1>
         </div>
         <nav class="sidebar-nav">
             <p class="nav-label">Menu Principal</p>
             <a href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Dashboard</a>
             <a href="acompanhar-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Acompanhar Chamado</a>
-            <a href="gerenciar-chamado.html" class="active"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span> Gerenciar Chamado <span class="menu-badge">5</span></a>
-            <a href="relatorios.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/><circle cx="12" cy="16" r="5"/><path d="M12 11v5"/></svg></span> Relatórios</a>
             <a href="duvidas-frequentes.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Dúvidas Frequentes</a>
             <a href="chat.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Chat <span class="menu-badge">3</span></a>
         </nav>
@@ -64,7 +65,7 @@
             </div>
             <div class="sidebar-actions">
                 <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" style="width:100%; margin-bottom:8px;">Tema</button>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
             </div>
         </div>
     </aside>
@@ -80,7 +81,7 @@
             <div class="header-actions">
                 <span class="date-display" id="dataAtual"></span>
                 <a href="novo-chamado.html" class="btn btn-primary btn-sm">+ Novo</a>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
             </div>
         </header>
 
@@ -94,6 +95,8 @@
                 <option value="Aberto">Aberto</option>
                 <option value="Em atendimento">Em Atendimento</option>
                 <option value="Resolvido">Resolvido</option>
+                <option value="Fechado">Fechado</option>
+                <option value="Cancelado">Cancelado</option>
                 <option value="Atrasado">Atrasado</option>
             </select>
             <select id="filtroPrioridadeGerenciar" onchange="filtrarGerenciar()">
@@ -122,24 +125,41 @@
                 <tbody id="listaGerenciar"></tbody>
             </table>
         </div>
-        <p style="padding: 0 24px 16px; font-size:0.75rem; color:var(--text-muted);" id="resultadoContadorGerenciar">Mostrando 5 chamados</p>
+        <p style="padding: 0 24px 16px; font-size:0.75rem; color:var(--text-muted);" id="resultadoContadorGerenciar">Mostrando 0 chamados</p>
     </main>
 
     <script src="js/script.js"></script>
     <script>
-        const chamadosGerenciar = [
-            { id: 1, solicitante: 'Rayssa Paiva', categoria: 'Reserva de notebooks', prioridade: 'Alta', status: 'Em atendimento', data: '03/07/2026' },
-            { id: 2, solicitante: 'Carla Mendes', categoria: 'Projetor', prioridade: 'Média', status: 'Aberto', data: '03/07/2026' },
-            { id: 3, solicitante: 'Joao Suporte', categoria: 'Internet/Rede', prioridade: 'Urgente', status: 'Resolvido', data: '02/07/2026' },
-            { id: 4, solicitante: 'Ana Souza', categoria: 'Computador com defeito', prioridade: 'Alta', status: 'Aberto', data: '03/07/2026' },
-            { id: 5, solicitante: 'Pedro Santos', categoria: 'Impressora', prioridade: 'Média', status: 'Atrasado', data: '01/07/2026' }
-        ];
+        // Fila começa ZERADA — sem dados de demonstração. Os chamados reais
+        // criados em "Novo Chamado" (localStorage) entram na fila abaixo.
+        const chamadosGerenciar = [];
+
+        // Carrega os chamados reais (localStorage) na fila de gerenciamento
+        function carregarChamadosGerenciar() {
+            try {
+                const salvos = JSON.parse(localStorage.getItem('chamadosConectaTI') || '[]');
+                salvos.forEach(c => {
+                    if (!chamadosGerenciar.some(x => x.id === c.id)) {
+                        chamadosGerenciar.push({
+                            id: c.id,
+                            solicitante: c.solicitante || '—',
+                            categoria: c.categoria || '—',
+                            prioridade: c.prioridade || 'Média',
+                            status: c.status || 'Aberto',
+                            data: c.data || ''
+                        });
+                    }
+                });
+            } catch (e) { /* ignore */ }
+        }
 
         function getBadgeGerenciar(status) {
             const classes = {
                 'Aberto': 'badge-aberto',
                 'Em atendimento': 'badge-atendimento',
                 'Resolvido': 'badge-resolvido',
+                'Fechado': 'badge-fechado',
+                'Cancelado': 'badge-cancelado',
                 'Atrasado': 'badge-atrasado'
             };
             return `<span class="badge ${classes[status] || 'badge-aberto'}">${status}</span>`;
@@ -153,6 +173,8 @@
                 'atender': { status: 'Em atendimento', msg: 'Chamado em atendimento!' },
                 'resolver': { status: 'Resolvido', msg: 'Chamado resolvido!' },
                 'cancelar': { status: 'Cancelado', msg: 'Chamado cancelado!' },
+                'fechar': { status: 'Fechado', msg: 'Chamado encerrado (Fechado)!' },
+                'reabrir': { status: 'Aberto', msg: 'Chamado reaberto!' },
                 'editar': { status: null, msg: 'Abrindo editor...' }
             };
 
@@ -199,10 +221,21 @@
                     <td>${c.data}</td>
                     <td>
                         <div class="chamado-row-actions">
-                            ${c.status !== 'Resolvido' && c.status !== 'Cancelado' ? `
-                                ${c.status === 'Aberto' ? `<button class="btn-gerenciar atender" onclick="acaoChamado(${c.id}, 'atender')">Atender</button>` : ''}
+                            ${(c.status === 'Aberto' || c.status === 'Atrasado') ? `
+                                <button class="btn-gerenciar atender" onclick="acaoChamado(${c.id}, 'atender')">Atender</button>
                                 <button class="btn-gerenciar resolver" onclick="acaoChamado(${c.id}, 'resolver')">Resolver</button>
                                 <button class="btn-gerenciar cancelar" onclick="acaoChamado(${c.id}, 'cancelar')">Cancelar</button>
+                            ` : ''}
+                            ${c.status === 'Em atendimento' ? `
+                                <button class="btn-gerenciar resolver" onclick="acaoChamado(${c.id}, 'resolver')">Resolver</button>
+                                <button class="btn-gerenciar cancelar" onclick="acaoChamado(${c.id}, 'cancelar')">Cancelar</button>
+                            ` : ''}
+                            ${c.status === 'Resolvido' ? `
+                                <button class="btn-gerenciar fechar" onclick="acaoChamado(${c.id}, 'fechar')">Fechar</button>
+                                <button class="btn-gerenciar reabrir" onclick="acaoChamado(${c.id}, 'reabrir')">Reabrir</button>
+                            ` : ''}
+                            ${(c.status === 'Fechado' || c.status === 'Cancelado') ? `
+                                <button class="btn-gerenciar reabrir" onclick="acaoChamado(${c.id}, 'reabrir')">Reabrir</button>
                             ` : ''}
                             <button class="btn-gerenciar editar" onclick="acaoChamado(${c.id}, 'editar')">Editar</button>
                             <button class="btn-gerenciar visualizar" onclick="window.location.href='acompanhar-chamado.html'">Ver</button>
@@ -211,9 +244,13 @@
                 </tr>
             `).join('');
 
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted);">${t('Nenhum chamado encontrado')}</td></tr>`;
+            }
+
             const contador = document.getElementById('resultadoContadorGerenciar');
             if (contador) {
-                contador.textContent = `Mostrando ${filtrados.length} chamado${filtrados.length > 1 ? 's' : ''}`;
+                contador.textContent = `${t('Mostrando')} ${filtrados.length} ${t(filtrados.length === 1 ? 'chamado' : 'chamados')}`;
             }
         }
 
@@ -222,7 +259,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            carregarChamadosGerenciar();
             exibirGerenciar();
+            atualizarBadgeGerenciar();
         });
     </script>
 </body>

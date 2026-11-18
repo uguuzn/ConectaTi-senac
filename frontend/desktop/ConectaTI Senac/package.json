@@ -1,0 +1,58 @@
+{
+  "name": "conectati-senac-desktop",
+  "version": "1.0.0",
+  "description": "ConectaTI Senac - Sistema de Chamados e Gestão de Equipamentos (versão desktop)",
+  "main": "electron/main.js",
+  "author": "Senac Taguatinga - TI",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.0"
+  },
+  "build": {
+    "appId": "br.senac.taguatinga.conectati",
+    "productName": "ConectaTI Senac",
+    "asar": false,
+    "icon": "assets/icon.png",
+    "files": [
+      "index.html",
+      "*.html",
+      "css/**",
+      "js/**",
+      "assets/**",
+      "electron/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ConectaTI Senac"
+    }
+  }
+}

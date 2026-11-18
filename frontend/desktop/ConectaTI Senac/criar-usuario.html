@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="theme-color" content="#0d4da2">
     <title>Criar Usuário - ConectaTI Senac</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
@@ -54,19 +55,12 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#grad)"/><text x="20" y="27" font-family="Arial" font-size="16" font-weight="800" fill="white" text-anchor="middle">CT</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs></svg></div>
+            <img class="logo" src="assets/logo-senac.png" alt="Logo Senac">
             <h1>ConectaTI</h1>
         </div>
         <nav class="sidebar-nav">
             <p class="nav-label">Menu Principal</p>
             <a href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Dashboard</a>
-            <a href="criar-usuario.html" class="active"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Criar Usuário</a>
-            <a href="criar-unidade.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Criar Unidade</a>
-            <a href="gerenciar-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span> Gerenciar Chamado</a>
-            <a href="relatorios.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/><circle cx="12" cy="16" r="5"/><path d="M12 11v5"/></svg></span> Relatórios</a>
-            <a href="equipamentos.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg></span> Equipamentos</a>
-            <a href="categorias.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Categorias</a>
-            <a href="auditoria.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Auditoria</a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
@@ -79,7 +73,7 @@
             </div>
             <div class="sidebar-actions">
                 <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" style="width:100%; margin-bottom:8px;">Tema</button>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
             </div>
         </div>
     </aside>
@@ -94,7 +88,7 @@
             </div>
             <div class="header-actions">
                 <span class="date-display" id="dataAtual"></span>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
             </div>
         </header>
 
@@ -167,6 +161,16 @@
                 <button type="submit" class="btn btn-primary btn-block">Criar Usuário</button>
             </form>
         </div>
+
+        <div class="form-criar">
+            <div class="form-header">
+                <div class="icon">👥</div>
+                <h1>Usuários Cadastrados (Demo)</h1>
+            </div>
+            <div id="listaUsuariosDemo" style="overflow-x:auto;">
+                <p style="color:var(--text-muted); font-size:0.9rem;">Nenhum usuário cadastrado localmente ainda.</p>
+            </div>
+        </div>
     </main>
 
     <script src="js/api.js"></script>
@@ -174,6 +178,7 @@
     <script>
         async function criarUsuario(event) {
             event.preventDefault();
+            const form = event.target;
             const nome = document.getElementById('nomeUsuario').value.trim();
             const email = document.getElementById('emailUsuario').value.trim();
             const perfil = document.getElementById('perfilUsuario').value;
@@ -197,28 +202,66 @@
                 return false;
             }
 
-            // Simula criação
+            // Tenta o backend; se falhar (sem auth de admin real), salva localmente (demo)
+            const usuario = {
+                nome, email, senha, telefone: '',
+                tipo: perfil, ativo: status === 'true',
+                unidade: unidade,
+                criadoEm: new Date().toISOString()
+            };
             try {
-                await ConectaTIAPI.criarUsuario({
-                    nome,
-                    email,
-                    senha,
-                    telefone: '',
-                    tipo: perfil,
-                    ativo: status === 'true'
-                });
+                await ConectaTIAPI.criarUsuario(usuario);
             } catch (error) {
-                mostrarNotificacao(error.message, 'error');
+                const res = BancoLocal.salvarUsuario(usuario);
+                if (!res.ok) {
+                    mostrarNotificacao(res.erro, 'error');
+                    return false;
+                }
+                mostrarNotificacao(`✅ Usuário ${nome} cadastrado com sucesso!`, 'success');
+                form.reset();
+                renderListaUsuariosDemo();
                 return false;
             }
 
             mostrarNotificacao(`✅ Usuário ${nome} criado com sucesso!`, 'success');
-            
-            // Limpa o formulário
-            event.currentTarget.reset();
-            
+            form.reset();
+            renderListaUsuariosDemo();
             return false;
         }
+
+        function renderListaUsuariosDemo() {
+            const alvo = document.getElementById('listaUsuariosDemo');
+            if (!alvo) return;
+            const lista = BancoLocal.listarUsuarios();
+            if (!lista.length) {
+                alvo.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">Nenhum usuário cadastrado localmente ainda.</p>';
+                return;
+            }
+            const perfisLabel = { ADMINISTRADOR:'Administrador', TECNICO:'Técnico', INSTRUTOR:'Instrutor', COORDENADOR:'Coordenador' };
+            const linhas = lista.map(u => `
+                <tr>
+                    <td style="padding:8px 12px; border-bottom:1px solid var(--border-color);">${u.nome}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid var(--border-color);">${u.email}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid var(--border-color);">${perfisLabel[u.tipo] || u.tipo}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid var(--border-color);">${u.unidade || '—'}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid var(--border-color);">${u.ativo ? 'Ativo' : 'Inativo'}</td>
+                </tr>`).join('');
+            alvo.innerHTML = `
+                <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                    <thead>
+                        <tr style="text-align:left; color:var(--text-secondary);">
+                            <th style="padding:8px 12px; border-bottom:2px solid var(--border-color);">Nome</th>
+                            <th style="padding:8px 12px; border-bottom:2px solid var(--border-color);">E-mail</th>
+                            <th style="padding:8px 12px; border-bottom:2px solid var(--border-color);">Perfil</th>
+                            <th style="padding:8px 12px; border-bottom:2px solid var(--border-color);">Unidade</th>
+                            <th style="padding:8px 12px; border-bottom:2px solid var(--border-color);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>${linhas}</tbody>
+                </table>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderListaUsuariosDemo);
     </script>
 </body>
 </html>

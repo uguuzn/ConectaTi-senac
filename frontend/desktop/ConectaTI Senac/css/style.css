@@ -4,13 +4,13 @@
    ============================================================ */
 
 :root {
-    --primary: #6C63FF;
-    --primary-dark: #5A52D5;
-    --primary-light: #8B83FF;
-    --primary-gradient: linear-gradient(135deg, #6C63FF, #FF6B6B);
-    --accent: #FFD93D;
+    --primary: #0d4da2;
+    --primary-dark: #0a3d7f;
+    --primary-light: #1f6dc4;
+    --primary-gradient: linear-gradient(135deg, #0d4da2, #f37021);
+    --accent: #f7941e;
     
-    --secondary: #FF6B6B;
+    --secondary: #f37021;
     --success: #6BCB77;
     --info: #4D96FF;
     --warning: #FFB347;
@@ -28,7 +28,7 @@
     
     --border-color: rgba(255, 255, 255, 0.06);
     --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --shadow-hover: 0 12px 48px rgba(108, 99, 255, 0.2);
+    --shadow-hover: 0 12px 48px rgba(13, 77, 162, 0.25);
     
     --sidebar-width: 250px;
     --header-height: 64px;
@@ -91,9 +91,12 @@ body {
 }
 
 .sidebar-brand .logo {
-    width: 40px;
-    height: 40px;
+    height: 38px;
+    width: auto;
+    max-width: 140px;
     flex-shrink: 0;
+    object-fit: contain;
+    display: block;
 }
 
 .sidebar-brand h1 {
@@ -166,7 +169,7 @@ body {
 .sidebar-nav a.active {
     background: var(--primary);
     color: white;
-    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(13, 77, 162, 0.35);
 }
 
 .sidebar-nav a.active .menu-icon svg {
@@ -304,12 +307,12 @@ body {
 .btn-primary {
     background: var(--primary-gradient);
     color: white;
-    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(13, 77, 162, 0.35);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(13, 77, 162, 0.45);
 }
 
 .btn-secondary {
@@ -375,7 +378,7 @@ body {
 .card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(108, 99, 255, 0.2);
+    border-color: rgba(13, 77, 162, 0.25);
 }
 
 .card .card-label {
@@ -583,6 +586,8 @@ body {
 .badge-reservado { background: rgba(255, 179, 71, 0.15); color: #FFB347; }
 .badge-em-uso { background: rgba(77, 150, 255, 0.15); color: #4D96FF; }
 .badge-em-manutencao { background: rgba(255, 71, 87, 0.15); color: #FF4757; }
+.badge-fechado { background: rgba(108, 110, 138, 0.18); color: #8A8AA8; }
+.badge-cancelado { background: rgba(255, 71, 87, 0.15); color: #FF4757; }
 
 /* ========================
    FILTROS
@@ -791,9 +796,11 @@ body {
 }
 
 .login-container .login-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 12px;
+    width: auto;
+    height: 84px;
+    margin: 0 auto 18px;
+    display: block;
+    object-fit: contain;
 }
 
 .login-container h1 {
@@ -836,9 +843,11 @@ body {
 }
 
 .index-container .logo-grande {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 16px;
+    width: auto;
+    height: 120px;
+    margin: 0 auto 20px;
+    display: block;
+    object-fit: contain;
     animation: pulse 2s infinite;
 }
 

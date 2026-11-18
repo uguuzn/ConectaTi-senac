@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="theme-color" content="#0d4da2">
     <title>Chat - ConectaTI Senac</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/logo-senac.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .menu-icon { width:20px; height:20px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; }
@@ -14,16 +15,15 @@
         .sidebar-nav a:hover .menu-icon svg { stroke:var(--text-primary); }
         .menu-badge { background:var(--danger); color:white; font-size:0.55rem; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:auto; min-width:18px; text-align:center; }
         .menu-divider { height:1px; background:var(--border-color); margin:8px 12px; }
-        
+
         .chat-layout {
             display: flex;
             gap: 16px;
             padding: 0 24px 16px;
             height: calc(100vh - 180px);
         }
-        
         .chat-sidebar {
-            width: 260px;
+            width: 280px;
             background: var(--bg-card);
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
@@ -52,52 +52,41 @@
         .chat-sidebar .usuario-online:hover { background: var(--bg-card-hover); }
         .chat-sidebar .usuario-online.active { background: var(--primary); color: white; }
         .chat-sidebar .usuario-online .avatar {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.7rem;
-            color: white;
-            flex-shrink: 0;
-            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.7rem; color: white;
+            flex-shrink: 0; position: relative;
         }
         .chat-sidebar .usuario-online .avatar .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
+            width: 8px; height: 8px; border-radius: 50%;
+            position: absolute; bottom: -2px; right: -2px;
             border: 2px solid var(--bg-card);
         }
-        .chat-sidebar .usuario-online .avatar .status-dot.online { background: var(--success); }
-        .chat-sidebar .usuario-online .avatar .status-dot.offline { background: var(--text-muted); }
-        .chat-sidebar .usuario-online .avatar .status-dot.away { background: var(--warning); }
-        .chat-sidebar .usuario-online .nome {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .chat-sidebar .usuario-online .perfil-chat {
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            display: block;
-        }
+        .chat-sidebar .usuario-online.active .avatar .status-dot { border-color: var(--primary); }
+        .status-dot.online { background: var(--success); }
+        .status-dot.offline { background: var(--text-muted); }
+        .status-dot.away { background: var(--warning); }
+        .chat-sidebar .usuario-online .nome { font-size: 0.8rem; font-weight: 500; }
+        .chat-sidebar .usuario-online .perfil-chat { font-size: 0.6rem; color: var(--text-muted); display: block; }
         .chat-sidebar .usuario-online.active .perfil-chat { color: rgba(255,255,255,0.7); }
         .chat-sidebar .mensagem-nao-lida {
             margin-left: auto;
-            background: var(--danger);
-            color: white;
-            font-size: 0.55rem;
-            font-weight: 700;
-            padding: 1px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
+            background: var(--danger); color: white;
+            font-size: 0.55rem; font-weight: 700;
+            padding: 1px 6px; border-radius: 10px;
+            min-width: 18px; text-align: center;
         }
-        
+
+        /* Canal da IA */
+        .canal-ia .avatar { background: var(--primary-gradient); }
+        .canal-ia .avatar-emoji { font-size: 0.95rem; }
+        .canal-ia .badge-ia {
+            margin-left: auto;
+            background: rgba(107,203,119,0.18); color: var(--success);
+            font-size: 0.5rem; font-weight: 700; padding: 2px 6px; border-radius: 8px;
+        }
+
         .chat-main {
             flex: 1;
             display: flex;
@@ -110,144 +99,116 @@
         .chat-main .chat-header {
             padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .chat-main .chat-header .info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .chat-main .chat-header .info { display: flex; align-items: center; gap: 10px; }
         .chat-main .chat-header .info .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: white;
-            flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: white; flex-shrink: 0;
         }
         .chat-main .chat-header .info .nome { font-weight: 600; font-size: 0.9rem; }
         .chat-main .chat-header .info .status { font-size: 0.65rem; color: var(--text-muted); }
         .chat-main .chat-header .info .status.online { color: var(--success); }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-        .chat-message {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            animation: fadeInUp 0.3s ease;
-        }
+
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
+        .chat-message { display: flex; gap: 10px; margin-bottom: 12px; animation: fadeInUp 0.3s ease; }
         .chat-message.sent { flex-direction: row-reverse; }
         .chat-message .avatar-msg {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.65rem;
-            color: white;
-            flex-shrink: 0;
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.65rem; color: white; flex-shrink: 0;
         }
         .chat-message .bubble {
-            max-width: 70%;
+            max-width: 72%;
             padding: 8px 14px;
             border-radius: 12px;
             background: var(--bg-input);
             color: var(--text-primary);
+            word-wrap: break-word;
+            line-height: 1.45;
         }
-        .chat-message.sent .bubble {
-            background: var(--primary);
-            color: white;
-        }
-        .chat-message .bubble .time {
-            font-size: 0.5rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-            display: block;
-        }
+        .chat-message.sent .bubble { background: var(--primary); color: white; }
+        .chat-message .bubble .time { font-size: 0.5rem; color: var(--text-muted); margin-top: 4px; display: block; }
         .chat-message.sent .bubble .time { color: rgba(255,255,255,0.7); }
-        .chat-message .bubble .nome-msg {
-            font-size: 0.6rem;
-            font-weight: 600;
-            color: var(--primary);
-            display: block;
-            margin-bottom: 2px;
-        }
+        .chat-message .bubble .nome-msg { font-size: 0.6rem; font-weight: 600; color: var(--primary); display: block; margin-bottom: 2px; }
         .chat-message.sent .bubble .nome-msg { color: rgba(255,255,255,0.9); }
-        
+        /* Bolha da IA */
+        .chat-message.ia .bubble { background: rgba(13,77,162,0.18); border-left: 3px solid var(--primary); }
+        .chat-message.ia .bubble .nome-msg { color: var(--primary); }
+        .chat-message.ia .avatar-msg { background: var(--primary-gradient); }
+
+        .sugestoes-ia { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 14px 40px; }
+        .sugestao-chip {
+            background: var(--bg-input); color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 5px 12px;
+            font-size: 0.72rem; cursor: pointer; transition: var(--transition);
+        }
+        .sugestao-chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .typing {
+            display: flex; gap: 4px; align-items: center;
+            padding: 6px 14px; color: var(--text-muted); font-size: 0.7rem;
+        }
+        .typing .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted);
+            animation: blink 1.2s infinite;
+        }
+        .typing .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%,80%,100% { opacity:0.3 } 40% { opacity:1 } }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
+
         .chat-input-area {
             padding: 12px 16px;
             border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            display: flex; gap: 10px; align-items: center;
         }
         .chat-input-area input {
-            flex: 1;
-            padding: 8px 14px;
+            flex: 1; padding: 8px 14px;
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius-sm);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            min-height: 40px;
+            background: var(--bg-input); color: var(--text-primary);
+            font-size: 0.85rem; min-height: 40px;
         }
         .chat-input-area input:focus { border-color: var(--primary); outline: none; }
         .chat-input-area .btn-send {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            padding: 8px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 40px;
-            transition: var(--transition);
+            background: var(--primary-gradient); color: white;
+            border: none; border-radius: var(--border-radius-sm);
+            padding: 8px 20px; font-weight: 600; cursor: pointer;
+            min-height: 40px; transition: var(--transition);
         }
-        .chat-input-area .btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(108,99,255,0.3); }
-        
+        .chat-input-area .btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(13,77,162,0.3); }
+        .chat-input-area .btn-send:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
         .chat-vazio {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 40px;
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: var(--text-muted); text-align: center; padding: 40px;
         }
         .chat-vazio .icon { font-size: 3rem; margin-bottom: 12px; }
         .chat-vazio h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 4px; }
         .chat-vazio p { font-size: 0.85rem; }
-        
+
         @media (max-width: 768px) {
             .chat-layout { flex-direction: column; height: auto; }
-            .chat-sidebar { width: 100%; max-height: 200px; }
-            .chat-main { min-height: 400px; }
+            .chat-sidebar { width: 100%; max-height: 220px; }
+            .chat-main { min-height: 420px; }
         }
     </style>
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="url(#grad)"/><text x="20" y="27" font-family="Arial" font-size="16" font-weight="800" fill="white" text-anchor="middle">CT</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs></svg></div>
+            <img class="logo" src="assets/logo-senac.png" alt="Logo Senac">
             <h1>ConectaTI</h1>
         </div>
         <nav class="sidebar-nav">
             <p class="nav-label">Menu Principal</p>
             <a href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Dashboard</a>
             <a href="novo-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span> Novo Chamado</a>
-            <a href="chat.html" class="active"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Chat <span class="menu-badge">3</span></a>
+            <a href="chat.html" class="active"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Chat</a>
             <a href="acompanhar-chamado.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Acompanhar Chamado</a>
             <a href="duvidas-frequentes.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Dúvidas Frequentes</a>
         </nav>
@@ -262,7 +223,7 @@
             </div>
             <div class="sidebar-actions">
                 <button onclick="toggleTheme()" class="btn btn-secondary btn-sm" style="width:100%; margin-bottom:8px;">Tema</button>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm" style="width:100%;">Sair</a>
             </div>
         </div>
     </aside>
@@ -273,252 +234,378 @@
         <header class="content-header">
             <div class="page-title">
                 <h1>💬 Chat</h1>
-                <p>Converse com a equipe em tempo real</p>
+                <p>Converse com o Suporte TI, com a equipe e com o Assistente IA</p>
             </div>
             <div class="header-actions">
                 <span class="date-display" id="dataAtual"></span>
-                <a href="index.html" onclick="localStorage.clear();" class="btn btn-danger btn-sm">Sair</a>
+                <a href="index.html" onclick="fazerLogout();" class="btn btn-danger btn-sm">Sair</a>
             </div>
         </header>
 
         <div class="chat-layout">
-            <!-- Sidebar com usuários -->
+            <!-- Lista de conversas -->
             <div class="chat-sidebar" id="chatSidebar">
-                <div class="titulo">📌 Usuários Online</div>
-                <div id="listaUsuariosOnline"></div>
-                <div class="titulo" style="margin-top:12px;">📋 Conversas Recentes</div>
-                <div id="listaConversas"></div>
+                <div class="titulo">🤖 Assistente</div>
+                <div id="listaAssistente"></div>
+                <div class="titulo" style="margin-top:12px;">💬 Conversas</div>
+                <div id="listaContatos"></div>
             </div>
 
-            <!-- Área principal do chat -->
+            <!-- Área principal -->
             <div class="chat-main">
                 <div class="chat-header" id="chatHeader">
                     <div class="info">
-                        <div class="avatar" id="chatAvatar" style="background:#6C63FF;">S</div>
+                        <div class="avatar" id="chatAvatar" style="background:var(--primary-gradient);">🤖</div>
                         <div>
-                            <div class="nome" id="chatNome">Suporte TI</div>
-                            <div class="status online" id="chatStatus">● Online</div>
+                            <div class="nome" id="chatNome">Assistente IA</div>
+                            <div class="status online" id="chatStatus">● Sempre online</div>
                         </div>
                     </div>
-                    <span style="font-size:0.7rem; color:var(--text-muted);" id="chatUnidade">Taguatinga</span>
+                    <span style="font-size:0.7rem; color:var(--text-muted);" id="chatExtra">Tira suas dúvidas</span>
                 </div>
 
-                <div class="chat-messages" id="chatMessages">
-                    <!-- Mensagens serão inseridas aqui -->
-                </div>
+                <div class="chat-messages" id="chatMessages"></div>
 
                 <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="Digite sua mensagem..." onkeypress="if(event.key==='Enter') enviarMensagemChat()">
-                    <button class="btn-send" onclick="enviarMensagemChat()">Enviar</button>
+                    <input type="text" id="chatInput" placeholder="Digite sua mensagem..." autocomplete="off">
+                    <button class="btn-send" id="btnEnviar" onclick="enviarMensagem()">Enviar</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script src="js/script.js"></script>
+    <script src="js/ia.js"></script>
     <script>
-        // ========================
-        // USUÁRIOS ONLINE
-        // ========================
-        const usuariosOnline = [
-            { id: 1, nome: 'João Suporte', perfil: 'Suporte TI', unidade: 'Taguatinga', status: 'online', cor: '#6C63FF' },
-            { id: 2, nome: 'Rayssa Paiva', perfil: 'Instrutor', unidade: 'Taguatinga', status: 'online', cor: '#FF6B6B' },
-            { id: 3, nome: 'Carla Mendes', perfil: 'Coordenação', unidade: 'Taguatinga', status: 'online', cor: '#4D96FF' },
-            { id: 4, nome: 'Ana Souza', perfil: 'Instrutor', unidade: 'Gama', status: 'away', cor: '#FFB347' },
-            { id: 5, nome: 'Pedro Santos', perfil: 'Coordenação', unidade: 'Ceilândia', status: 'offline', cor: '#8A8AA8' }
+    // ============================================================
+    // CHAT CONECTATI — usuário↔técnico (bidirecional) + Assistente IA
+    // Mensagens humanas persistem em localStorage (chatConectaTI) e
+    // são vistas pelo outro lado quando ele loga. IA = ConectaTIAI.
+    // ============================================================
+    (function () {
+        const STORAGE_HUMANO = 'chatConectaTI';
+        const STORAGE_LIDO = 'chatConectaTILido';
+
+        // Roster de demo (quem aparece pra conversar). Técnico = Suporte TI.
+        const roster = [
+            { id:1, nome:'João Suporte',   email:'joao.suporte@senac.com', perfil:'Suporte TI',   unidade:'Taguatinga', cor:'#0d4da2', status:'online' },
+            { id:2, nome:'Rayssa Paiva',   email:'rayssa.paiva@senac.com', perfil:'Instrutor',    unidade:'Taguatinga', cor:'#f37021', status:'online' },
+            { id:3, nome:'Carla Mendes',   email:'carla.mendes@senac.com', perfil:'Coordenação',  unidade:'Taguatinga', cor:'#4D96FF', status:'online' },
+            { id:4, nome:'Ana Souza',      email:'ana.souza@senac.com',    perfil:'Instrutor',    unidade:'Gama',       cor:'#FFB347', status:'away' },
+            { id:5, nome:'Pedro Santos',   email:'pedro.santos@senac.com', perfil:'Coordenação',  unidade:'Ceilândia',  cor:'#8A8AA8', status:'offline' }
         ];
 
-        // ========================
-        // CONVERSAS
-        // ========================
-        const conversas = {
-            'João Suporte': [
-                { usuario: 'João Suporte', mensagem: 'Olá! Como posso ajudar você?', hora: '10:30' },
-                { usuario: 'Você', mensagem: 'Estou com problema no projetor da sala 12', hora: '10:32' },
-                { usuario: 'João Suporte', mensagem: 'Vou verificar agora mesmo!', hora: '10:33' }
-            ],
-            'Rayssa Paiva': [
-                { usuario: 'Rayssa Paiva', mensagem: 'Oi! Preciso reservar notebooks para amanhã', hora: '09:15' },
-                { usuario: 'Você', mensagem: 'Quantos notebooks você precisa?', hora: '09:17' },
-                { usuario: 'Rayssa Paiva', mensagem: '15 notebooks para a turma de TADS', hora: '09:18' }
-            ],
-            'Carla Mendes': [
-                { usuario: 'Carla Mendes', mensagem: 'Bom dia! O relatório está pronto?', hora: '08:00' },
-                { usuario: 'Você', mensagem: 'Bom dia! Estou finalizando, envio em 1 hora', hora: '08:05' }
-            ]
-        };
-
-        let conversaAtual = 'João Suporte';
-
-        // ========================
-        // FUNÇÕES
-        // ========================
-        function getStatusText(status) {
-            const map = { 'online': 'Online', 'offline': 'Offline', 'away': 'Ausente' };
-            return map[status] || 'Online';
+        // ---------- Sessão atual ----------
+        function sessao() {
+            const s = JSON.parse(localStorage.getItem('sessaoConectaTI') || 'null');
+            const u = s?.usuario || {};
+            return {
+                email: u.email || 'visitante@senac.com',
+                nome: u.nome || u.email?.split('@')[0] || 'Visitante',
+                perfil: (typeof getPerfilUsuario === 'function') ? getPerfilUsuario() : 'Visitante',
+                unidade: (typeof getUnidadeUsuario === 'function') ? getUnidadeUsuario() : ''
+            };
         }
 
-        function getStatusDot(status) {
-            return status;
+        // ---------- Persistência ----------
+        function loadHumano() { return JSON.parse(localStorage.getItem(STORAGE_HUMANO) || '{}'); }
+        function saveHumano(d) { localStorage.setItem(STORAGE_HUMANO, JSON.stringify(d)); }
+        function loadLido() { return JSON.parse(localStorage.getItem(STORAGE_LIDO) || '{}'); }
+        function saveLido(d) { localStorage.setItem(STORAGE_LIDO, JSON.stringify(d)); }
+
+        function canalIdIA() { return 'ia::' + sessao().email; }
+        function canalIdHumano(parceiroEmail) {
+            const me = sessao().email;
+            return [me, parceiroEmail].sort().join('::');
+        }
+        function loadIA() { return JSON.parse(localStorage.getItem(canalIdIA()) || '[]'); }
+        function saveIA(msgs) { localStorage.setItem(canalIdIA(), JSON.stringify(msgs)); }
+
+        function pushHumano(parceiroEmail, msg) {
+            const d = loadHumano();
+            const id = canalIdHumano(parceiroEmail);
+            if (!d[id]) d[id] = [];
+            d[id].push(msg);
+            saveHumano(d);
+        }
+        function pushIA(msg) {
+            const msgs = loadIA();
+            msgs.push(msg);
+            saveIA(msgs);
         }
 
-        function exibirUsuariosOnline() {
-            const container = document.getElementById('listaUsuariosOnline');
-            const perfil = localStorage.getItem('perfilUsuario') || 'Usuário';
-            
-            container.innerHTML = usuariosOnline.map(u => `
-                <div class="usuario-online ${conversaAtual === u.nome ? 'active' : ''}" onclick="abrirConversa('${u.nome}')">
-                    <div class="avatar" style="background:${u.cor}">
-                        ${u.nome.charAt(0)}
-                        <span class="status-dot ${getStatusDot(u.status)}"></span>
-                    </div>
-                    <div>
-                        <span class="nome">${u.nome}</span>
-                        <span class="perfil-chat">${u.perfil} - ${u.unidade}</span>
-                    </div>
-                    ${u.status === 'online' ? `<span class="mensagem-nao-lida">${Math.floor(Math.random() * 3) + 1}</span>` : ''}
-                </div>
-            `).join('');
+        // ---------- Helpers ----------
+        function escapar(t) {
+            return (t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
-
-        function exibirConversas() {
-            const container = document.getElementById('listaConversas');
-            const keys = Object.keys(conversas);
-            
-            container.innerHTML = keys.map(key => `
-                <div class="usuario-online" onclick="abrirConversa('${key}')">
-                    <div class="avatar" style="background:${usuariosOnline.find(u => u.nome === key)?.cor || '#6C63FF'}">
-                        ${key.charAt(0)}
-                    </div>
-                    <div>
-                        <span class="nome">${key}</span>
-                        <span class="perfil-chat">${conversas[key].length} mensagens</span>
-                    </div>
-                </div>
-            `).join('');
+        function renderTexto(t) {
+            // escapar + converter **negrito** em <strong>
+            return escapar(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         }
+        function horaAgora() {
+            const n = new Date();
+            return String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+        }
+        function inicial(nome) { return (nome || '?').trim().charAt(0).toUpperCase(); }
 
-        function abrirConversa(nome) {
-            conversaAtual = nome;
-            exibirUsuariosOnline();
-            exibirMensagensChat(nome);
-            
-            const usuario = usuariosOnline.find(u => u.nome === nome);
-            if (usuario) {
-                document.getElementById('chatAvatar').textContent = usuario.nome.charAt(0);
-                document.getElementById('chatAvatar').style.background = usuario.cor;
-                document.getElementById('chatNome').textContent = usuario.nome;
-                document.getElementById('chatStatus').textContent = `● ${getStatusText(usuario.status)}`;
-                document.getElementById('chatStatus').className = `status ${usuario.status}`;
-                document.getElementById('chatUnidade').textContent = usuario.unidade;
+        // ---------- Estado ----------
+        let canalAtual = null; // {tipo:'ia'|'humano', parceiro: objetoRoster}
+
+        // ---------- Contatos (por papel) ----------
+        function contatos() {
+            const me = sessao();
+            const souTecnico = me.perfil === 'Suporte TI';
+
+            // Base do roster, excluindo o próprio usuário (se ele estiver no roster)
+            let lista = roster.filter(u => u.email !== me.email);
+
+            if (souTecnico) {
+                // Técnico conversa com todos os outros (instrutores/coordenação/admin)
+                lista = lista.filter(u => u.perfil !== 'Suporte TI');
+            } else {
+                // Não-técnico conversa com o Suporte TI
+                lista = lista.filter(u => u.perfil === 'Suporte TI');
             }
+
+            // Acrescenta parceiros que já trocaram mensagens mas não estão no roster
+            const d = loadHumano();
+            const meEmail = me.email;
+            Object.keys(d).forEach(id => {
+                const parts = id.split('::');
+                const parceiroEmail = parts.find(p => p !== meEmail);
+                if (!parceiroEmail) return;
+                if (lista.some(u => u.email === parceiroEmail)) return;
+                // só inclui se fizer sentido para o papel: técnico vê qualquer parceiro; não-técnico só técnicos
+                if (souTecnico) {
+                    lista.push({ id:'x-'+parceiroEmail, nome:parceiroEmail.split('@')[0], email:parceiroEmail, perfil:'Usuário', unidade:'', cor:'#8A8AA8', status:'online' });
+                }
+            });
+            return lista;
         }
 
-        function exibirMensagensChat(nome) {
-            const container = document.getElementById('chatMessages');
-            const mensagens = conversas[nome] || [];
-            const perfil = localStorage.getItem('perfilUsuario') || 'Usuário';
+        function naoLidas(parceiroEmail) {
+            const d = loadHumano();
+            const id = canalIdHumano(parceiroEmail);
+            const msgs = d[id] || [];
+            const me = sessao().email;
+            const recebidas = msgs.filter(m => m.de !== me).length;
+            const lido = loadLido()[id] || 0;
+            return Math.max(0, recebidas - lido);
+        }
 
-            if (mensagens.length === 0) {
-                container.innerHTML = `
-                    <div class="chat-vazio">
-                        <div class="icon">💬</div>
-                        <h3>Nenhuma mensagem</h3>
-                        <p>Envie uma mensagem para iniciar a conversa</p>
+        // ---------- Render: lista lateral ----------
+        function renderLista() {
+            // Assistente IA (sempre)
+            const iaAtivo = canalAtual && canalAtual.tipo === 'ia';
+            document.getElementById('listaAssistente').innerHTML = `
+                <div class="usuario-online canal-ia ${iaAtivo ? 'active' : ''}" onclick="abrirCanalIA()">
+                    <div class="avatar"><span class="avatar-emoji">🤖</span></div>
+                    <div>
+                        <span class="nome">Assistente IA</span>
+                        <span class="perfil-chat">Tira suas dúvidas</span>
                     </div>
-                `;
+                    <span class="badge-ia">IA</span>
+                </div>
+            `;
+            // Contatos
+            const conts = contatos();
+            const el = document.getElementById('listaContatos');
+            if (!conts.length) {
+                el.innerHTML = `<div style="padding:10px 8px; font-size:0.72rem; color:var(--text-muted);">Nenhum contato disponível.</div>`;
                 return;
             }
-
-            container.innerHTML = mensagens.map(m => {
-                const isSent = m.usuario === 'Você' || m.usuario === perfil;
-                const usuario = usuariosOnline.find(u => u.nome === m.usuario);
-                const cor = usuario?.cor || '#6C63FF';
-                const iniciais = m.usuario.charAt(0);
-                const nomeExibido = m.usuario === 'Você' ? perfil : m.usuario;
-                
+            el.innerHTML = conts.map(u => {
+                const ativo = canalAtual && canalAtual.tipo === 'humano' && canalAtual.parceiro.email === u.email;
+                const nl = naoLidas(u.email);
                 return `
-                    <div class="chat-message ${isSent ? 'sent' : ''}">
-                        <div class="avatar-msg" style="background:${cor}">${iniciais}</div>
-                        <div class="bubble">
-                            <span class="nome-msg">${nomeExibido}</span>
-                            ${m.mensagem}
-                            <span class="time">${m.hora}</span>
+                    <div class="usuario-online ${ativo ? 'active' : ''}" onclick="abrirCanalHumano('${u.email}')">
+                        <div class="avatar" style="background:${u.cor}">
+                            ${inicial(u.nome)}
+                            <span class="status-dot ${u.status}"></span>
                         </div>
+                        <div>
+                            <span class="nome">${u.nome}</span>
+                            <span class="perfil-chat">${u.perfil}${u.unidade ? ' · ' + u.unidade : ''}</span>
+                        </div>
+                        ${nl > 0 ? `<span class="mensagem-nao-lida">${nl}</span>` : ''}
                     </div>
                 `;
             }).join('');
-            
+        }
+
+        // ---------- Abrir canais ----------
+        window.abrirCanalIA = function () {
+            canalAtual = { tipo: 'ia' };
+            // Header
+            const av = document.getElementById('chatAvatar');
+            av.textContent = '🤖'; av.style.background = 'var(--primary-gradient)';
+            document.getElementById('chatNome').textContent = 'Assistente IA';
+            document.getElementById('chatStatus').textContent = '● Sempre online';
+            document.getElementById('chatStatus').className = 'status online';
+            document.getElementById('chatExtra').textContent = 'Tira suas dúvidas';
+            // Mensagem de saudação inicial se vazio
+            const msgs = loadIA();
+            if (msgs.length === 0) {
+                const s = ConectaTIAI.saudacaoInicial();
+                pushIA({ de:'ia', nome:'Assistente IA', texto: s.texto, hora: horaAgora(), sugestoes: s.sugestoes });
+            }
+            renderMensagens();
+            renderLista();
+            document.getElementById('chatInput').focus();
+        };
+
+        window.abrirCanalHumano = function (parceiroEmail) {
+            const parceiro = contatos().find(u => u.email === parceiroEmail) || {
+                nome: parceiroEmail.split('@')[0], email: parceiroEmail, perfil:'Usuário', unidade:'', cor:'#8A8AA8', status:'online'
+            };
+            canalAtual = { tipo: 'humano', parceiro };
+            // Marca como lido
+            const lido = loadLido();
+            const id = canalIdHumano(parceiroEmail);
+            const d = loadHumano();
+            lido[id] = (d[id] || []).filter(m => m.de !== sessao().email).length;
+            saveLido(lido);
+            // Header
+            const av = document.getElementById('chatAvatar');
+            av.textContent = inicial(parceiro.nome); av.style.background = parceiro.cor;
+            document.getElementById('chatNome').textContent = parceiro.nome;
+            const stTxt = { online:'● Online', away:'● Ausente', offline:'● Offline' }[parceiro.status] || '● Online';
+            document.getElementById('chatStatus').textContent = stTxt;
+            document.getElementById('chatStatus').className = 'status ' + (parceiro.status === 'online' ? 'online' : '');
+            document.getElementById('chatExtra').textContent = parceiro.perfil + (parceiro.unidade ? ' · ' + parceiro.unidade : '');
+            renderMensagens();
+            renderLista();
+            document.getElementById('chatInput').focus();
+        };
+
+        // ---------- Render: mensagens ----------
+        function renderMensagens() {
+            const container = document.getElementById('chatMessages');
+            const me = sessao();
+            let msgs, html = '';
+
+            if (canalAtual && canalAtual.tipo === 'ia') {
+                msgs = loadIA();
+                html = msgs.map(m => {
+                    const sent = m.de !== 'ia';
+                    return `
+                        <div class="chat-message ${sent ? 'sent' : 'ia'}">
+                            <div class="avatar-msg" style="background:${sent ? 'var(--primary)' : 'var(--primary-gradient)'}">${sent ? inicial(me.nome) : '🤖'}</div>
+                            <div class="bubble">
+                                ${!sent ? `<span class="nome-msg">${m.nome}</span>` : ''}
+                                ${renderTexto(m.texto)}
+                                <span class="time">${m.hora}</span>
+                            </div>
+                        </div>
+                        ${m.sugestoes && m.sugestoes.length ? `<div class="sugestoes-ia" style="${sent ? 'margin-left:auto; justify-content:flex-end;' : ''}">${m.sugestoes.map(s => `<button class="sugestao-chip" onclick="enviarSugestao(${JSON.stringify(s).replace(/"/g,'&quot;')})">${s}</button>`).join('')}</div>` : ''}
+                    `;
+                }).join('');
+            } else if (canalAtual && canalAtual.tipo === 'humano') {
+                const d = loadHumano();
+                msgs = d[canalIdHumano(canalAtual.parceiro.email)] || [];
+                if (!msgs.length) {
+                    html = `<div class="chat-vazio"><div class="icon">💬</div><h3>Sem mensagens ainda</h3><p>Envie uma mensagem para <strong>${canalAtual.parceiro.nome}</strong>. A conversa fica salva e ${canalAtual.parceiro.perfil === 'Suporte TI' ? 'o técnico responde' : 'a pessoa vê'} ao entrar no Chat.</p></div>`;
+                } else {
+                    html = msgs.map(m => {
+                        const sent = m.de === me.email;
+                        const cor = sent ? 'var(--primary)' : (canalAtual.parceiro.cor);
+                        return `
+                            <div class="chat-message ${sent ? 'sent' : ''}">
+                                <div class="avatar-msg" style="background:${cor}">${sent ? inicial(me.nome) : inicial(m.nome)}</div>
+                                <div class="bubble">
+                                    ${sent ? '' : `<span class="nome-msg">${m.nome}</span>`}
+                                    ${renderTexto(m.texto)}
+                                    <span class="time">${m.hora}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } else {
+                html = `<div class="chat-vazio"><div class="icon">💬</div><h3>Selecione uma conversa</h3><p>Escolha o Assistente IA ou um contato à esquerda.</p></div>`;
+            }
+
+            container.innerHTML = html;
             container.scrollTop = container.scrollHeight;
         }
 
-        function enviarMensagemChat() {
-            const input = document.getElementById('chatInput');
-            const mensagem = input.value.trim();
-            if (!mensagem) return;
-
-            const perfil = localStorage.getItem('perfilUsuario') || 'Usuário';
-            const now = new Date();
-            const hora = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-
-            if (!conversas[conversaAtual]) {
-                conversas[conversaAtual] = [];
-            }
-
-            conversas[conversaAtual].push({
-                usuario: 'Você',
-                mensagem: mensagem,
-                hora: hora
-            });
-
-            input.value = '';
-            exibirMensagensChat(conversaAtual);
-            exibirConversas();
-
-            // Simula resposta automática
-            setTimeout(() => {
-                const respostas = [
-                    'Entendi! Vou resolver isso agora mesmo.',
-                    'Ok, estou verificando para você.',
-                    'Já estou analisando o problema.',
-                    'Pode deixar que vou te ajudar.',
-                    'Ótimo! Já estou trabalhando nisso.',
-                    'Vou encaminhar para o setor responsável.',
-                    'Assim que possível te dou um retorno.'
-                ];
-                const resposta = respostas[Math.floor(Math.random() * respostas.length)];
-                
-                if (!conversas[conversaAtual]) {
-                    conversas[conversaAtual] = [];
-                }
-                
-                const agora = new Date();
-                const horaResp = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
-                
-                conversas[conversaAtual].push({
-                    usuario: conversaAtual,
-                    mensagem: resposta,
-                    hora: horaResp
-                });
-                
-                exibirMensagensChat(conversaAtual);
-                exibirConversas();
-            }, 1500);
+        // ---------- Typing IA ----------
+        function mostrarTyping() {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message ia';
+            div.id = 'typingRow';
+            div.innerHTML = `<div class="avatar-msg" style="background:var(--primary-gradient)">🤖</div>
+                <div class="bubble"><div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        function removerTyping() {
+            const t = document.getElementById('typingRow');
+            if (t) t.remove();
         }
 
-        // ========================
-        // INICIALIZAÇÃO
-        // ========================
-        document.addEventListener('DOMContentLoaded', function() {
-            exibirUsuariosOnline();
-            exibirConversas();
-            
-            // Abre a primeira conversa
-            const primeiraConversa = Object.keys(conversas)[0];
-            if (primeiraConversa) {
-                abrirConversa(primeiraConversa);
+        // ---------- Enviar ----------
+        window.enviarMensagem = function () {
+            const input = document.getElementById('chatInput');
+            const texto = input.value.trim();
+            if (!texto || !canalAtual) return;
+            const me = sessao();
+
+            if (canalAtual.tipo === 'ia') {
+                pushIA({ de: me.email, nome: me.nome, texto, hora: horaAgora() });
+                input.value = '';
+                renderMensagens();
+                // Resposta da IA com pequeno atraso
+                mostrarTyping();
+                setTimeout(() => {
+                    removerTyping();
+                    const r = ConectaTIAI.responder(texto);
+                    pushIA({ de:'ia', nome:'Assistente IA', texto: r.texto, hora: horaAgora(), sugestoes: r.sugestoes });
+                    renderMensagens();
+                }, 650);
+            } else {
+                pushHumano(canalAtual.parceiro.email, { de: me.email, nome: me.nome, texto, hora: horaAgora() });
+                input.value = '';
+                // Marca lido (a própria mensagem não conta como recebida)
+                const lido = loadLido();
+                const id = canalIdHumano(canalAtual.parceiro.email);
+                const d = loadHumano();
+                lido[id] = (d[id] || []).filter(m => m.de !== me.email).length;
+                saveLido(lido);
+                renderMensagens();
+                renderLista();
+                mostrarNotificacao('Mensagem enviada para ' + canalAtual.parceiro.nome + '.', 'success');
             }
+        };
+
+        window.enviarSugestao = function (texto) {
+            document.getElementById('chatInput').value = texto;
+            window.enviarMensagem();
+        };
+
+        // Enter envia
+        document.getElementById('chatInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); window.enviarMensagem(); }
         });
+
+        // ---------- Init ----------
+        document.addEventListener('DOMContentLoaded', function () {
+            // Preenche identidade no sidebar (caso script.js não tenha feito)
+            const me = sessao();
+            const ua = document.getElementById('userAvatar');
+            const un = document.getElementById('userName');
+            const up = document.getElementById('userPerfil');
+            const uu = document.getElementById('userUnidade');
+            if (ua) ua.textContent = inicial(me.nome);
+            if (un) un.textContent = me.nome;
+            if (up) up.textContent = me.perfil;
+            if (uu) uu.textContent = me.unidade || '—';
+
+            renderLista();
+            abrirCanalIA(); // começa no Assistente IA
+        });
+    })();
     </script>
 </body>
 </html>
