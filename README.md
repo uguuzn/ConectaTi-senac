@@ -52,11 +52,12 @@ O projeto tem três aplicativos separados:
 
 ```powershell
 cd frontend/web-chamados/conectati-senac-react
+Copy-Item .env.example .env
 npm.cmd install
 npm.cmd run dev
 ```
 
-O servidor local usa a porta `5173`.
+O servidor local usa a porta `5173`. `.env.example` mostra `http://localhost:3000`; se estiver rodando o backend Spring local deste repositório, ajuste `VITE_API_URL` em `.env` para `http://localhost:8080`.
 
 ### Mobile de suporte
 

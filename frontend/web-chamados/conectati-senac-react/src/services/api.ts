@@ -1,21 +1,24 @@
 import { getAuthHeader } from "./session";
 
-// A URL da API deve vir EXCLUSIVAMENTE de VITE_API_URL (nunca hardcoded).
-const rawApiUrl = import.meta.env.VITE_API_URL as string | undefined;
+const rawApiUrl = import.meta.env.VITE_API_URL?.trim();
 
 if (!rawApiUrl) {
-  if (import.meta.env.DEV) {
-    console.warn(
-      "[api] VITE_API_URL não definida — usando http://localhost:8080 (apenas desenvolvimento).",
-    );
-  } else {
-    // Falha explícita no build de produção: sem isso o app tentaria
-    // http://localhost:8080 silenciosamente e todas as requisições falhariam.
-    throw new Error("[api] VITE_API_URL não configurada no build de produção.");
-  }
+  throw new Error(
+    "[api] Defina VITE_API_URL no ambiente usado para iniciar ou compilar o frontend.",
+  );
 }
 
-const baseUrl = (rawApiUrl || "http://localhost:8080").replace(/\/$/, "");
+const baseUrl = rawApiUrl.replace(/\/+$/, "");
+
+if (!/^https?:\/\//i.test(baseUrl)) {
+  throw new Error(
+    "[api] VITE_API_URL precisa ser uma URL absoluta iniciada por http:// ou https://.",
+  );
+}
+
+function apiUrl(path: string): string {
+  return `${baseUrl}/${path.replace(/^\/+/, "")}`;
+}
 
 export class ApiError extends Error {
   constructor(
@@ -27,7 +30,7 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${baseUrl}${path}`, {
+  const response = await fetch(apiUrl(path), {
     ...init,
     credentials: "include",
     headers: { "Content-Type": "application/json", ...getAuthHeader(), ...init.headers },
