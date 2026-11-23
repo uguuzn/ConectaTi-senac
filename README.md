@@ -20,6 +20,22 @@ O `bootRun` usa o perfil `local`, com segredo de token exclusivo para desenvolvi
 
 Swagger fica desligado por padrão. Para ativá-lo localmente, defina `SWAGGER_ENABLED=true`; a interface fica em `/swagger-ui/index.html`.
 
+## Configuração local
+
+O perfil local exige `APP_AUTH_TOKEN_SECRET`; a aplicação não inicia com o segredo público de desenvolvimento. Crie `backend/conectati-api/conectati-api/.env.local` a partir de `.env.example` e preencha as variáveis. O `bootRun` carrega esse arquivo automaticamente quando existe; variáveis já definidas no ambiente do processo têm prioridade. Nunca committe `.env.local` nem compartilhe o segredo.
+
+Para gerar um segredo aleatório de 48 bytes em Base64 no PowerShell:
+
+```powershell
+$b = New-Object byte[] 48
+(New-Object Security.Cryptography.RNGCryptoServiceProvider).GetBytes($b)
+$secret = [Convert]::ToBase64String($b)
+$env:APP_AUTH_TOKEN_SECRET = $secret
+```
+
+Para salvar permanentemente no perfil do Windows, rode `setx APP_AUTH_TOKEN_SECRET "$secret"` depois de gerar o valor. `setx` vale para novos terminais; feche e reabra o PowerShell ou a IDE. Para a IDE, adicione `APP_AUTH_TOKEN_SECRET` às variáveis de ambiente da configuração de execução da aplicação. Se usar `.env.local`, gere o segredo e cole o valor apenas nesse arquivo local ignorado pelo Git.
+
+Trocar o segredo invalida todos os tokens já emitidos e exige que os usuários entrem novamente. Nunca inclua o segredo em arquivos versionados, logs ou mensagens. Se os caracteres do console aparecerem incorretos, execute `chcp 65001`.
 ## Configuração de produção
 
 O Docker ativa o perfil `production`. Configure no serviço da API:

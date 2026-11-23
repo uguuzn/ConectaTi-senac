@@ -38,7 +38,7 @@ public class TokenService {
         if (tokenSecret == null || tokenSecret.getBytes(StandardCharsets.UTF_8).length < 32
                 || PUBLIC_DEVELOPMENT_SECRET.equals(tokenSecret)) {
             throw new IllegalStateException(
-                    "APP_AUTH_TOKEN_SECRET deve ser definido com pelo menos 32 bytes e não pode usar o segredo público de desenvolvimento.");
+                    "APP_AUTH_TOKEN_SECRET ausente ou inválido: defina um segredo privado com pelo menos 32 bytes, diferente do segredo público de desenvolvimento. No PowerShell, gere um valor com: $b = New-Object byte[] 48; (New-Object Security.Cryptography.RNGCryptoServiceProvider).GetBytes($b); $env:APP_AUTH_TOKEN_SECRET = [Convert]::ToBase64String($b).");
         }
     }
 

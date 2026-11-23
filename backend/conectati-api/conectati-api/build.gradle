@@ -40,3 +40,23 @@ tasks.named('test') {
 	useJUnitPlatform()
 	failOnNoDiscoveredTests = true
 }
+// Permite ao bootRun ler variáveis locais sem dependências externas.
+tasks.named('bootRun') {
+	def localEnvFile = layout.projectDirectory.file('.env.local').asFile
+	def allowedKeys = ['APP_AUTH_TOKEN_SECRET', 'DB_URL', 'DB_USERNAME', 'DB_PASSWORD', 'APP_CORS_ALLOWED_ORIGINS', 'APP_DEMO_DATA_ENABLED', 'SWAGGER_ENABLED'] as Set
+	if (localEnvFile.isFile()) {
+		localEnvFile.eachLine('UTF-8') { line ->
+			def entry = line.trim()
+			if (entry && !entry.startsWith('#')) {
+				def separator = entry.indexOf('=')
+				if (separator > 0) {
+					def key = entry.substring(0, separator).trim()
+					def value = entry.substring(separator + 1).trim()
+					if (allowedKeys.contains(key) && !System.getenv().containsKey(key)) {
+						environment key, value
+					}
+				}
+			}
+		}
+	}
+}

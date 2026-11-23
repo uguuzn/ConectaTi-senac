@@ -27,3 +27,6 @@ Thumbs.db
 
 # Vercel local build output
 .vercel/
+
+# Local package-manager caches
+.npm-cache/
